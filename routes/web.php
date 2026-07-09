@@ -5,9 +5,12 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\PagesController;
+use App\Http\Controllers\ArchiveController;
+use App\Http\Controllers\ArtistsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ArticlesController;
+use App\Http\Controllers\ArtworksController;
 use App\Http\Controllers\HomepageController;
 
 App::booted(function () {
@@ -26,6 +29,13 @@ App::booted(function () {
 
         Route::get('/articles', [ArticlesController::class, 'index'])->name('articles.index');
         Route::get('/articles/{slug}', [ArticlesController::class, 'show'])->name('articles.show');
+
+        // Archive (anonymous browse/search; registered before the pages catch-all)
+        Route::get('/archive', ArchiveController::class)->name('archive.index');
+        Route::get('/archive/artworks', [ArtworksController::class, 'index'])->name('archive.artworks.index');
+        Route::get('/archive/artworks/{slug}', [ArtworksController::class, 'show'])->name('archive.artworks.show');
+        Route::get('/archive/artists', [ArtistsController::class, 'index'])->name('archive.artists.index');
+        Route::get('/archive/artists/{slug}', [ArtistsController::class, 'show'])->name('archive.artists.show');
 
         Route::get('/{slug}', [PagesController::class, 'show'])->name('pages.show');
     });
