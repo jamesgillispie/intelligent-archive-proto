@@ -2,13 +2,17 @@
 
 use Illuminate\Support\Str;
 
-function setNavItem($label, $url = null, $active = false): array
-{
-    return [
-        'label' => $label,
-        'url' => $url ?? '/' . Str::slug($label),
-        'active' => $active,
-    ];
+// Guarded: Blast's DataStore includes this file on every app boot, which
+// happens more than once per process under PHPUnit.
+if (!function_exists('setNavItem')) {
+    function setNavItem(string $label, ?string $url = null, bool $active = false): array
+    {
+        return [
+            'label' => $label,
+            'url' => $url ?? '/' . Str::slug($label),
+            'active' => $active,
+        ];
+    }
 }
 
 return [
