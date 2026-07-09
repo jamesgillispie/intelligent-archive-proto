@@ -1,0 +1,6 @@
+uuid,iiifurl,iiifthumburl,viewtype,sequence,width,height,maxpixels,depictstmsobjectid,assistivetext
+img-100,https://api.nga.gov/iiif/img-100,https://api.nga.gov/iiif/img-100/full/!200,primary,0,4000,2700,,100,A wide river valley after a storm
+img-100b,https://api.nga.gov/iiif/img-100b,https://api.nga.gov/iiif/img-100b/full/!200,alternate,1,2000,1400,,100,Detail of the river bend
+img-101,https://api.nga.gov/iiif/img-101,https://api.nga.gov/iiif/img-101/full/!200,primary,0,3600,2800,640,101,Two figures in a rowboat
+img-103,https://api.nga.gov/iiif/img-103,https://api.nga.gov/iiif/img-103/full/!200,primary,0,2400,3600,,103,A standing marble figure
+img-104,https://api.nga.gov/iiif/img-104,https://api.nga.gov/iiif/img-104/full/!200,primary,0,3200,2100,,104,Trees in autumn color
