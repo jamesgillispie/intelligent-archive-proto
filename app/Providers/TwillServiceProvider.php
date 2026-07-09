@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use A17\Twill\Facades\TwillNavigation;
+use Illuminate\Support\Facades\Schema;
 use A17\Twill\Facades\TwillAppSettings;
 use Illuminate\Support\ServiceProvider;
 use A17\Twill\Services\Settings\SettingsGroup;
@@ -61,6 +62,9 @@ class TwillServiceProvider extends ServiceProvider
         );
 
         // Prevent twill-metadata from throwing an error is not global Settings has been saved yet
-        TwillAppSettings::getGroupForName('seo')->boot();
+        // (guarded so artisan commands work on a fresh database, before migrations have run)
+        if (Schema::hasTable('app_settings')) {
+            TwillAppSettings::getGroupForName('seo')->boot();
+        }
     }
 }
