@@ -40,6 +40,26 @@ return [
                 'name' => 'ArticleTypes',
                 'enabled' => true,
             ],
+            [
+                'name' => 'Artworks',
+                'enabled' => true,
+            ],
+            [
+                'name' => 'Artists',
+                'enabled' => true,
+            ],
+            [
+                'name' => 'Classifications',
+                'enabled' => true,
+            ],
+            [
+                'name' => 'Departments',
+                'enabled' => true,
+            ],
+            [
+                'name' => 'Mediums',
+                'enabled' => true,
+            ],
         ],
     ],
     'dashboard' => [

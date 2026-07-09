@@ -548,6 +548,498 @@ namespace App\Twill\Capsules\Articles\Models {
     class IdeHelperArticleSlug {}
 }
 
+namespace App\Twill\Capsules\Artists\Models {
+    /**
+     * @property int $id
+     * @property \Illuminate\Support\Carbon|null $deleted_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property bool $published
+     * @property string $nga_constituent_id
+     * @property int|null $source_record_id
+     * @property \Illuminate\Support\Carbon|null $last_synced_at
+     * @property string|null $name
+     * @property string|null $display_date
+     * @property string|null $source_name
+     * @property string|null $source_display_date
+     * @property string|null $nationality
+     * @property int|null $begin_year
+     * @property int|null $end_year
+     * @property string|null $ulan_id
+     * @property string|null $wikidata_id
+     * @property bool $artist_of_nga_object
+     * @property string|null $description
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Artworks\Models\Artwork> $artworks
+     * @property-read int|null $artworks_count
+     * @property string $slug
+     * @property-read string|null $title
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Artists\Models\ArtistRevision> $revisions
+     * @property-read int|null $revisions_count
+     * @property-write mixed $publish_start_date
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Artists\Models\ArtistSlug> $slugs
+     * @property-read int|null $slugs_count
+     * @property-read \App\Models\Source\SourceRecord|null $sourceRecord
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Tag> $tags
+     * @property-read int|null $tags_count
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist accessible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist draft()
+     * @method static \Database\Factories\Archive\ArtistFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist forFallbackLocaleSlug(string $slug)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist forInactiveSlug(string $slug)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist forSlug(string $slug)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist mine()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist onlyTrashed()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist published()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist publishedInListings()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist visible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereArtistOfNgaObject($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereBeginYear($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereDeletedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereDescription($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereDisplayDate($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereEndYear($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereLastSyncedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereName($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereNationality($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereNgaConstituentId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist wherePublished($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereSourceDisplayDate($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereSourceName($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereSourceRecordId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereUlanId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist whereWikidataId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist withTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist withTrashed(bool $withTrashed = true)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist withoutTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artist withoutTrashed()
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperArtist {}
+}
+
+namespace App\Twill\Capsules\Artists\Models {
+    /**
+     * @property int $id
+     * @property int $artist_id
+     * @property int|null $user_id
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property string $payload
+     * @property-read mixed $by_user
+     * @property-read \A17\Twill\Models\User|null $user
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistRevision newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistRevision newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistRevision query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistRevision whereArtistId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistRevision whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistRevision whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistRevision wherePayload($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistRevision whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistRevision whereUserId($value)
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperArtistRevision {}
+}
+
+namespace App\Twill\Capsules\Artists\Models {
+    /**
+     * @property int $id
+     * @property int $artist_id
+     * @property \Illuminate\Support\Carbon|null $deleted_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property string $slug
+     * @property string $locale
+     * @property bool $active
+     * @property-write mixed $publish_start_date
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Tag> $tags
+     * @property-read int|null $tags_count
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug accessible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug draft()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug onlyTrashed()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug published()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug publishedInListings()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug visible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug whereActive($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug whereArtistId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug whereDeletedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug whereLocale($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug whereSlug($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug whereTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug withTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug withTrashed(bool $withTrashed = true)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug withoutTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtistSlug withoutTrashed()
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperArtistSlug {}
+}
+
+namespace App\Twill\Capsules\Artworks\Models {
+    /**
+     * @property int $id
+     * @property \Illuminate\Support\Carbon|null $deleted_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property bool $published
+     * @property string $nga_object_id
+     * @property string|null $accession_number
+     * @property int|null $source_record_id
+     * @property \Illuminate\Support\Carbon|null $last_synced_at
+     * @property string|null $title
+     * @property string|null $display_date
+     * @property string|null $medium_text
+     * @property string|null $dimensions
+     * @property string|null $credit_line
+     * @property string|null $attribution
+     * @property string|null $source_title
+     * @property string|null $source_display_date
+     * @property string|null $source_medium_text
+     * @property string|null $source_dimensions
+     * @property string|null $source_credit_line
+     * @property string|null $source_attribution
+     * @property int|null $source_begin_year
+     * @property int|null $source_end_year
+     * @property string|null $source_inscription
+     * @property string|null $source_classification
+     * @property string|null $source_subclassification
+     * @property string|null $source_department_abbr
+     * @property string|null $description
+     * @property int|null $classification_id
+     * @property int|null $department_id
+     * @property int|null $medium_id
+     * @property bool $is_displayable
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Artists\Models\Artist> $artists
+     * @property-read int|null $artists_count
+     * @property-read \App\Twill\Capsules\Classifications\Models\Classification|null $classification
+     * @property-read \App\Twill\Capsules\Departments\Models\Department|null $department
+     * @property string $slug
+     * @property-read mixed $social_image
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Artworks\Models\ImageAsset> $images
+     * @property-read int|null $images_count
+     * @property-read \App\Twill\Capsules\Mediums\Models\Medium|null $medium
+     * @property-read \CwsDigital\TwillMetadata\Models\Metadata|null $metadata
+     * @property-read \App\Twill\Capsules\Artworks\Models\ImageAsset|null $primaryImage
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Artworks\Models\ArtworkRevision> $revisions
+     * @property-read int|null $revisions_count
+     * @property-write mixed $publish_start_date
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Artworks\Models\ArtworkSlug> $slugs
+     * @property-read int|null $slugs_count
+     * @property-read \App\Models\Source\SourceRecord|null $sourceRecord
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Tag> $tags
+     * @property-read int|null $tags_count
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork accessible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork displayable()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork draft()
+     * @method static \Database\Factories\Archive\ArtworkFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork forFallbackLocaleSlug(string $slug)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork forInactiveSlug(string $slug)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork forSlug(string $slug)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork mine()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork onlyTrashed()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork published()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork publishedInListings()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork visible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereAccessionNumber($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereAttribution($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereClassificationId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereCreditLine($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereDeletedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereDepartmentId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereDescription($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereDimensions($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereDisplayDate($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereIsDisplayable($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereLastSyncedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereMediumId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereMediumText($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereNgaObjectId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork wherePublished($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereSourceAttribution($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereSourceBeginYear($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereSourceClassification($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereSourceCreditLine($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereSourceDepartmentAbbr($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereSourceDimensions($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereSourceDisplayDate($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereSourceEndYear($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereSourceInscription($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereSourceMediumText($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereSourceRecordId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereSourceSubclassification($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereSourceTitle($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereTitle($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork withTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork withTrashed(bool $withTrashed = true)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork withoutTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Artwork withoutTrashed()
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperArtwork {}
+}
+
+namespace App\Twill\Capsules\Artworks\Models {
+    /**
+     * @property int $id
+     * @property int $artwork_id
+     * @property int|null $user_id
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property string $payload
+     * @property-read mixed $by_user
+     * @property-read \A17\Twill\Models\User|null $user
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkRevision newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkRevision newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkRevision query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkRevision whereArtworkId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkRevision whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkRevision whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkRevision wherePayload($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkRevision whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkRevision whereUserId($value)
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperArtworkRevision {}
+}
+
+namespace App\Twill\Capsules\Artworks\Models {
+    /**
+     * @property int $id
+     * @property int $artwork_id
+     * @property \Illuminate\Support\Carbon|null $deleted_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property string $slug
+     * @property string $locale
+     * @property bool $active
+     * @property-write mixed $publish_start_date
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Tag> $tags
+     * @property-read int|null $tags_count
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug accessible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug draft()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug onlyTrashed()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug published()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug publishedInListings()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug visible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug whereActive($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug whereArtworkId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug whereDeletedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug whereLocale($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug whereSlug($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug whereTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug withTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug withTrashed(bool $withTrashed = true)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug withoutTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSlug withoutTrashed()
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperArtworkSlug {}
+}
+
+namespace App\Twill\Capsules\Artworks\Models {
+    /**
+     * A published NGA IIIF image for an artwork. Remote by design: NGA serves
+     * open-access imagery over IIIF, so the Twill media library (uploaded
+     * files) is deliberately not used for artwork imagery. The rights signal
+     * lives here — an artwork without a validated image renders metadata-only.
+     *
+     * @property int $id
+     * @property int $artwork_id
+     * @property string $nga_uuid
+     * @property string|null $iiif_url
+     * @property string|null $iiif_thumb_url
+     * @property string|null $view_type
+     * @property bool $is_primary
+     * @property int|null $width
+     * @property int|null $height
+     * @property int|null $max_pixels
+     * @property string|null $assistive_text
+     * @property string $validation_status
+     * @property \Illuminate\Support\Carbon|null $validated_at
+     * @property int $position
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property-read \App\Twill\Capsules\Artworks\Models\Artwork $artwork
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereArtworkId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereAssistiveText($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereHeight($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereIiifThumbUrl($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereIiifUrl($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereIsPrimary($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereMaxPixels($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereNgaUuid($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset wherePosition($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereValidatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereValidationStatus($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereViewType($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereWidth($value)
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperImageAsset {}
+}
+
+namespace App\Twill\Capsules\Classifications\Models {
+    /**
+     * Imported-only vocabulary derived from NGA object fields. source_name is
+     * the immutable match key used by the import pipeline; name is the display
+     * value editors may refine.
+     *
+     * @property int $id
+     * @property \Illuminate\Support\Carbon|null $deleted_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property bool $published
+     * @property string|null $name
+     * @property string $source_name
+     * @property string|null $description
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Artworks\Models\Artwork> $artworks
+     * @property-read int|null $artworks_count
+     * @property string $slug
+     * @property-read string|null $title
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Classifications\Models\ClassificationRevision> $revisions
+     * @property-read int|null $revisions_count
+     * @property-write mixed $publish_start_date
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Classifications\Models\ClassificationSlug> $slugs
+     * @property-read int|null $slugs_count
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Tag> $tags
+     * @property-read int|null $tags_count
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification accessible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification draft()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification forFallbackLocaleSlug(string $slug)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification forInactiveSlug(string $slug)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification forSlug(string $slug)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification mine()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification onlyTrashed()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification published()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification publishedInListings()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification visible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification whereDeletedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification whereDescription($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification whereName($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification wherePublished($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification whereSourceName($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification whereTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification withTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification withTrashed(bool $withTrashed = true)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification withoutTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Classification withoutTrashed()
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperClassification {}
+}
+
+namespace App\Twill\Capsules\Classifications\Models {
+    /**
+     * @property int $id
+     * @property int $classification_id
+     * @property int|null $user_id
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property string $payload
+     * @property-read mixed $by_user
+     * @property-read \A17\Twill\Models\User|null $user
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationRevision newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationRevision newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationRevision query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationRevision whereClassificationId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationRevision whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationRevision whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationRevision wherePayload($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationRevision whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationRevision whereUserId($value)
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperClassificationRevision {}
+}
+
+namespace App\Twill\Capsules\Classifications\Models {
+    /**
+     * @property int $id
+     * @property int $classification_id
+     * @property \Illuminate\Support\Carbon|null $deleted_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property string $slug
+     * @property string $locale
+     * @property bool $active
+     * @property-write mixed $publish_start_date
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Tag> $tags
+     * @property-read int|null $tags_count
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug accessible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug draft()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug onlyTrashed()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug published()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug publishedInListings()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug visible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug whereActive($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug whereClassificationId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug whereDeletedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug whereLocale($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug whereSlug($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug whereTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug withTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug withTrashed(bool $withTrashed = true)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug withoutTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ClassificationSlug withoutTrashed()
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperClassificationSlug {}
+}
+
 namespace App\Twill\Capsules\ContactLandings\Models {
     /**
      * @property int $id
@@ -619,6 +1111,129 @@ namespace App\Twill\Capsules\ContactLandings\Models {
      */
     #[\AllowDynamicProperties]
     class IdeHelperContactLandingRevision {}
+}
+
+namespace App\Twill\Capsules\Departments\Models {
+    /**
+     * Imported-only vocabulary derived from NGA object fields. source_name is
+     * the immutable match key used by the import pipeline; name is the display
+     * value editors may refine.
+     *
+     * @property int $id
+     * @property \Illuminate\Support\Carbon|null $deleted_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property bool $published
+     * @property string|null $name
+     * @property string $source_name
+     * @property string|null $description
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Artworks\Models\Artwork> $artworks
+     * @property-read int|null $artworks_count
+     * @property string $slug
+     * @property-read string|null $title
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Departments\Models\DepartmentRevision> $revisions
+     * @property-read int|null $revisions_count
+     * @property-write mixed $publish_start_date
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Departments\Models\DepartmentSlug> $slugs
+     * @property-read int|null $slugs_count
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Tag> $tags
+     * @property-read int|null $tags_count
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department accessible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department draft()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department forFallbackLocaleSlug(string $slug)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department forInactiveSlug(string $slug)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department forSlug(string $slug)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department mine()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department onlyTrashed()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department published()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department publishedInListings()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department visible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department whereDeletedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department whereDescription($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department whereName($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department wherePublished($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department whereSourceName($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department whereTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department withTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department withTrashed(bool $withTrashed = true)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department withoutTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Department withoutTrashed()
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperDepartment {}
+}
+
+namespace App\Twill\Capsules\Departments\Models {
+    /**
+     * @property int $id
+     * @property int $department_id
+     * @property int|null $user_id
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property string $payload
+     * @property-read mixed $by_user
+     * @property-read \A17\Twill\Models\User|null $user
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentRevision newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentRevision newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentRevision query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentRevision whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentRevision whereDepartmentId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentRevision whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentRevision wherePayload($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentRevision whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentRevision whereUserId($value)
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperDepartmentRevision {}
+}
+
+namespace App\Twill\Capsules\Departments\Models {
+    /**
+     * @property int $id
+     * @property int $department_id
+     * @property \Illuminate\Support\Carbon|null $deleted_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property string $slug
+     * @property string $locale
+     * @property bool $active
+     * @property-write mixed $publish_start_date
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Tag> $tags
+     * @property-read int|null $tags_count
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug accessible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug draft()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug onlyTrashed()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug published()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug publishedInListings()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug visible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug whereActive($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug whereDeletedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug whereDepartmentId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug whereLocale($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug whereSlug($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug whereTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug withTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug withTrashed(bool $withTrashed = true)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug withoutTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|DepartmentSlug withoutTrashed()
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperDepartmentSlug {}
 }
 
 namespace App\Twill\Capsules\Homepages\Models {
@@ -700,6 +1315,129 @@ namespace App\Twill\Capsules\Homepages\Models {
      */
     #[\AllowDynamicProperties]
     class IdeHelperHomepageRevision {}
+}
+
+namespace App\Twill\Capsules\Mediums\Models {
+    /**
+     * Imported-only vocabulary derived from NGA object fields. source_name is
+     * the immutable match key used by the import pipeline; name is the display
+     * value editors may refine.
+     *
+     * @property int $id
+     * @property \Illuminate\Support\Carbon|null $deleted_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property bool $published
+     * @property string|null $name
+     * @property string $source_name
+     * @property string|null $description
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Artworks\Models\Artwork> $artworks
+     * @property-read int|null $artworks_count
+     * @property string $slug
+     * @property-read string|null $title
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Mediums\Models\MediumRevision> $revisions
+     * @property-read int|null $revisions_count
+     * @property-write mixed $publish_start_date
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Mediums\Models\MediumSlug> $slugs
+     * @property-read int|null $slugs_count
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Tag> $tags
+     * @property-read int|null $tags_count
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium accessible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium draft()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium forFallbackLocaleSlug(string $slug)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium forInactiveSlug(string $slug)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium forSlug(string $slug)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium mine()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium onlyTrashed()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium published()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium publishedInListings()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium visible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium whereDeletedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium whereDescription($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium whereName($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium wherePublished($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium whereSourceName($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium whereTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium withTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium withTrashed(bool $withTrashed = true)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium withoutTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Medium withoutTrashed()
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperMedium {}
+}
+
+namespace App\Twill\Capsules\Mediums\Models {
+    /**
+     * @property int $id
+     * @property int $medium_id
+     * @property int|null $user_id
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property string $payload
+     * @property-read mixed $by_user
+     * @property-read \A17\Twill\Models\User|null $user
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumRevision newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumRevision newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumRevision query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumRevision whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumRevision whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumRevision whereMediumId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumRevision wherePayload($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumRevision whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumRevision whereUserId($value)
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperMediumRevision {}
+}
+
+namespace App\Twill\Capsules\Mediums\Models {
+    /**
+     * @property int $id
+     * @property int $medium_id
+     * @property \Illuminate\Support\Carbon|null $deleted_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property string $slug
+     * @property string $locale
+     * @property bool $active
+     * @property-write mixed $publish_start_date
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Tag> $tags
+     * @property-read int|null $tags_count
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug accessible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug draft()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug onlyTrashed()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug published()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug publishedInListings()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug visible()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug whereActive($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug whereDeletedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug whereLocale($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug whereMediumId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug whereSlug($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug whereTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug withTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug withTrashed(bool $withTrashed = true)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug withoutTag($tags, string $type = 'slug')
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MediumSlug withoutTrashed()
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperMediumSlug {}
 }
 
 namespace App\Twill\Capsules\Pages\Models {

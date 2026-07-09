@@ -35,6 +35,20 @@ class TwillServiceProvider extends ServiceProvider
                 ]),
         );
 
+        TwillNavigation::addLink(
+            NavigationLink::make()
+                ->forModule('artworks')
+                ->title('Archive')
+                ->doNotAddSelfAsFirstChild()
+                ->setChildren([
+                    NavigationLink::make()->forModule('artworks')->title('Artworks'),
+                    NavigationLink::make()->forModule('artists')->title('Artists'),
+                    NavigationLink::make()->forModule('classifications')->title('Classifications'),
+                    NavigationLink::make()->forModule('departments')->title('Departments'),
+                    NavigationLink::make()->forModule('mediums')->title('Mediums'),
+                ]),
+        );
+
         TwillNavigation::addLink(NavigationLink::make()->forSingleton('aboutLanding')->title('About'));
 
         TwillNavigation::addLink(NavigationLink::make()->forSingleton('contactLanding')->title('Contact'));
