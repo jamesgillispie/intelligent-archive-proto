@@ -7,20 +7,21 @@
         </nav>
 
         <div class="grid gap-32 py-32 lg:grid-cols-[3fr_2fr] lg:gap-48">
+            @php
+                $hasVisual =
+                    $artwork->hasImage(\App\Twill\Capsules\Artworks\Models\Artwork::IMAGE_ROLE) ||
+                    ($artwork->primaryImage?->iiif_url && !$artwork->primaryImage->hasFailed());
+            @endphp
             <figure>
-                @if ($artwork->primaryImage?->iiif_url)
-                    <img class="h-auto w-full" src="{{ $artwork->primaryImage->sizedUrl(800) }}"
-                        srcset="{{ $artwork->primaryImage->sizedUrl(800) }} 800w, {{ $artwork->primaryImage->sizedUrl(1400) }} 1400w"
-                        alt="{{ $artwork->primaryImage->altText($artwork->title) }}" sizes="(min-width: 900px) 60vw, 100vw" />
-                    @if ($artwork->primaryImage->assistive_text)
-                        <figcaption class="f-ui-01 mt-8 opacity-60">
-                            {{ $artwork->primaryImage->assistive_text }}
-                        </figcaption>
-                    @endif
-                @else
-                    <div class="f-ui-01 flex aspect-[4/5] items-center justify-center bg-[rgba(0,0,0,0.04)] opacity-60">
-                        No open-access image is available for this work.
-                    </div>
+                <div @class(['aspect-[4/5]' => !$hasVisual])>
+                    <x-archive.artwork-image :artwork="$artwork" :widths="[800, 1400]" sizes="(min-width: 900px) 60vw, 100vw"
+                        :eager="true" img-class="h-auto w-full"
+                        placeholder="No open-access image is available for this work." />
+                </div>
+                @if ($artwork->primaryImage?->assistive_text)
+                    <figcaption class="f-ui-01 mt-8 opacity-60">
+                        {{ $artwork->primaryImage->assistive_text }}
+                    </figcaption>
                 @endif
             </figure>
 

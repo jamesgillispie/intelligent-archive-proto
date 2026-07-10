@@ -16,7 +16,7 @@ class ArchiveController extends Controller
     public function __invoke(): Factory|View
     {
         $recent = Artwork::displayable()
-            ->with('primaryImage')
+            ->with(['primaryImage', 'medias'])
             ->orderByDesc('last_synced_at')
             ->orderBy('id')
             ->take(8)

@@ -26,7 +26,7 @@ class ArtworksController extends Controller
         ]);
 
         $artworks = Artwork::displayable()
-            ->with(['primaryImage', 'artists'])
+            ->with(['primaryImage', 'artists', 'medias'])
             ->when(
                 $filters['artist'] ?? null,
                 fn($query, $artist) => $query->whereHas('artists', fn($q) => $q->where('artists.id', $artist)),
@@ -85,6 +85,7 @@ class ArtworksController extends Controller
                 'primaryImage',
                 'images',
                 'artists',
+                'medias',
                 'classification',
                 'department',
                 'medium',
@@ -113,7 +114,7 @@ class ArtworksController extends Controller
         }
 
         return Artwork::displayable()
-            ->with('primaryImage')
+            ->with(['primaryImage', 'medias'])
             ->whereKeyNot($artwork->id)
             ->whereHas('artists', fn($q) => $q->whereIn('artists.id', $artistIds))
             ->orderBy('source_begin_year')

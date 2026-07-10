@@ -3,8 +3,10 @@
 namespace Tests\Feature\Archive;
 
 use Tests\TestCase;
+use A17\Twill\Models\Media;
 use App\Twill\Capsules\Artists\Models\Artist;
 use App\Twill\Capsules\Artworks\Models\Artwork;
+use App\Twill\Capsules\Artworks\Models\ImageAsset;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Twill\Capsules\Classifications\Models\Classification;
 
@@ -116,6 +118,72 @@ class ArchivePagesTest extends TestCase
         $slug = $artwork->slugs()->where('active', true)->value('slug');
 
         $this->get(route('archive.artworks.show', $slug))->assertNotFound();
+    }
+
+    public function testDownloadedArtworksRenderLocalMediaThroughGlide(): void
+    {
+        $artwork = Artwork::factory()
+            ->withPrimaryImage(['nga_uuid' => 'img-local'])
+            ->create();
+
+        $media = Media::create([
+            'uuid' => 'img-local/img-local.jpg',
+            'filename' => 'img-local.jpg',
+            'width' => 800,
+            'height' => 1000,
+            'alt_text' => 'A downloaded painting',
+        ]);
+        $artwork->medias()->attach($media->id, [
+            'role' => Artwork::IMAGE_ROLE,
+            'crop' => 'default',
+            'ratio' => 'default',
+            'crop_x' => 0,
+            'crop_y' => 0,
+            'crop_w' => 800,
+            'crop_h' => 1000,
+            'metadatas' => '{}',
+        ]);
+        $artwork
+            ->images()
+            ->firstOrFail()
+            ->forceFill(['media_id' => $media->id])
+            ->save();
+
+        $slug = $artwork->slugs()->where('active', true)->value('slug');
+        $response = $this->get(route('archive.artworks.show', $slug))->assertOk();
+
+        // Served locally via Glide, not from the NGA IIIF endpoint.
+        $response->assertSee('/img/img-local/img-local.jpg', false);
+        $response->assertSee('A downloaded painting');
+        $response->assertDontSee('api.nga.gov/iiif/img-local', false);
+    }
+
+    public function testPendingDownloadsFallBackToRemoteIiif(): void
+    {
+        $artwork = Artwork::factory()->withPrimaryImage()->create();
+        $iiifUrl = $artwork->images()->firstOrFail()->iiif_url;
+
+        $slug = $artwork->slugs()->where('active', true)->value('slug');
+
+        $this->get(route('archive.artworks.show', $slug))->assertOk()->assertSee($iiifUrl, false);
+    }
+
+    public function testFailedDownloadsRenderAQuietPlaceholder(): void
+    {
+        $artwork = Artwork::factory()
+            ->withPrimaryImage([
+                'validation_status' => ImageAsset::VALIDATION_FAILED,
+                'failure_reason' => 'http_404',
+            ])
+            ->create();
+        $iiifUrl = $artwork->images()->firstOrFail()->iiif_url;
+
+        $slug = $artwork->slugs()->where('active', true)->value('slug');
+
+        $this->get(route('archive.artworks.show', $slug))
+            ->assertOk()
+            ->assertSee('No open-access image is available for this work.')
+            ->assertDontSee($iiifUrl, false);
     }
 
     public function testArtistPagesRender(): void
