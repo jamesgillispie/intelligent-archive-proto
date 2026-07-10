@@ -1,0 +1,15 @@
+@layer base {
+    .transition-page {
+        html.is-rendering & {
+            opacity: 1;
+            transition: 350ms ease;
+        }
+
+        html.is-animating &,
+        html.is-leaving & {
+            @apply top-header absolute left-0 right-0 opacity-0;
+
+            transition: opacity 350ms ease-out;
+        }
+    }
+}

@@ -1,0 +1,25 @@
+---
+stages:
+  - triggers
+
+trigger_build:
+  stage: triggers
+
+  variables:
+    TARGET_ENV: $CI_COMMIT_BRANCH
+
+  trigger:
+    include:
+      - local: .gitlab/pipelines/build.yml
+    strategy: depend
+
+  rules:
+    # runs: only on pushes and defined branches
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "dev"
+      variables:
+        TARGET_ENV: $CI_COMMIT_BRANCH
+
+    # runs: only when tagging
+    - if: $CI_COMMIT_TAG
+      variables:
+        TARGET_ENV: production

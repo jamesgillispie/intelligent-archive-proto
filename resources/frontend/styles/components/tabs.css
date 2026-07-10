@@ -1,0 +1,16 @@
+[data-behavior*="Tabs"] {
+    --tab-transition-time: 200ms;
+}
+
+[data-behavior*="Tabs"][data-tabs-immediate="true"] {
+    --tab-transition-time: 0ms;
+}
+
+[data-behavior*="Tabs"] [role="tabpanel"] {
+    opacity: 1;
+    transition: opacity var(--tab-transition-time) ease-in;
+}
+
+[data-behavior*="Tabs"] [role="tabpanel"][inert] {
+    opacity: 0;
+}

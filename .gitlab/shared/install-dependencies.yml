@@ -1,0 +1,86 @@
+# ---
+# Snippet: install-dependencies
+#
+# Usage:
+#
+# Include in your Pipeline:
+#
+# ```yaml
+# include:
+#   - '.gitlab/shared/install-dependencies.yml'
+# ```
+#
+# And update the job so cache can be reused:
+#
+# ```yaml
+# job:
+#   stage: test
+#
+#   extends:
+#     - .need-dependencies
+# ```
+
+# ---
+# cache snippets
+
+.cache-dependencies: &cache-dependencies
+  key:
+    files:
+      - composer.lock
+      - package-lock.json
+    prefix: deps
+  paths:
+    - .composer/
+    - .npm/
+    - node_modules/
+    - vendor/
+  policy: pull
+
+# ---
+# dependency installation (part of prepare stage)
+
+dependencies:
+  stage: prepare
+
+  # adjust the policy to first attempt to retrieve an existing copy of the
+  # cache and then update on success.
+  cache:
+    <<: *cache-dependencies
+    policy: pull-push
+
+  variables:
+    COMPOSER_CACHE_DIR: .composer
+    NPM_CONFIG_CACHE: .npm
+
+  before_script:
+    # install different version of NodeJS
+    - curl https://mise.jdx.dev/install.sh | sh
+    - export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH"
+    - mise --version
+    - mise install
+    # smoke test installed versions
+    - node --version
+    - npm --version
+    - php --version
+    - composer --version
+    # ssh-agent & keys
+    - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )"
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - chmod 0700 ~/.ssh
+    - echo "$SSH_REPO_KNOWN_HOSTS" > ~/.ssh/known_hosts
+    - chmod 0600 ~/.ssh/known_hosts
+
+  script:
+    - composer install --no-interaction --no-scripts --prefer-dist --no-progress
+    - sha256sum -c node_modules/.sha256sum || (npm ci --ignore-scripts && sha256sum package-lock.json > node_modules/.sha256sum)
+
+# ---
+# job dependencies
+
+.need-dependencies:
+  cache:
+    <<: *cache-dependencies
+  needs:
+    - dependencies

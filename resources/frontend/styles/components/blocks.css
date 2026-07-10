@@ -1,0 +1,10 @@
+@layer components {
+    /* Block spacing */
+    .block-el {
+        @apply my-60 md:my-140 lg:my-160;
+
+        > .block-el {
+            @apply my-0 lg:my-0;
+        }
+    }
+}

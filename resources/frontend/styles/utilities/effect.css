@@ -1,0 +1,89 @@
+@layer utilities {
+    /* Transitions */
+    .effect-hover-underline {
+        @media (pointer: fine) {
+            @apply anim-color underline decoration-transparent decoration-1 underline-offset-2 hover:decoration-current group-hover:decoration-current;
+        }
+    }
+
+    .effect-hidden-fade {
+        @apply pointer-events-none invisible opacity-0;
+
+        will-change: opacity, visibility;
+        transition:
+            opacity 300ms cubic-bezier(0, 0, 0.58, 1) 50ms,
+            visibility 0s 351ms;
+    }
+
+    .effect-hidden-translate {
+        @apply pointer-events-none invisible;
+
+        will-change: transform, visibility;
+        transition:
+            transform 300ms cubic-bezier(0, 0, 0.58, 1),
+            visibility 0s 351ms;
+    }
+
+    .effect-hidden-fade-translate {
+        @apply pointer-events-none invisible;
+
+        will-change: transform, opacity, visibility;
+        transition:
+            opacity 300ms cubic-bezier(0, 0, 0.58, 1),
+            transform 300ms cubic-bezier(0, 0, 0.58, 1),
+            visibility 0s 351ms;
+    }
+
+    .effect-show-fade {
+        @apply pointer-events-auto visible;
+
+        will-change: opacity, visibility;
+        transition:
+            visibility 0ms,
+            opacity cubic-bezier(0, 0, 0.58, 1) 300ms 16ms;
+    }
+
+    .effect-show-translate {
+        @apply pointer-events-auto visible;
+
+        will-change: transform, visibility;
+        transition:
+            visibility 0ms ease,
+            transform cubic-bezier(0, 0, 0.58, 1) 300ms 16ms;
+    }
+
+    .effect-show-fade-translate {
+        @apply pointer-events-auto visible;
+
+        will-change: transform, opacity, visibility;
+        transition:
+            visibility 0ms ease,
+            transform cubic-bezier(0, 0, 0.58, 1) 300ms 16ms,
+            opacity cubic-bezier(0, 0, 0.58, 1) 300ms 16ms;
+    }
+
+    .effect-color {
+        @apply transition-colors duration-300 ease-in-out;
+    }
+
+    .effect-transform {
+        @apply transition-transform duration-300 ease-in-out;
+    }
+
+    .effect-all {
+        @apply transition-all duration-500 ease-in-out;
+    }
+
+    .effect-opacity {
+        @apply transition-opacity duration-300 ease-in-out;
+    }
+
+    /* Focus */
+    .effect-focus {
+        @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-inverse;
+    }
+
+    .effect-focus-within {
+        @apply focus-within:ring focus-within:ring-primary focus-within:ring-offset-2 focus-within:ring-offset-inverse;
+    }
+}

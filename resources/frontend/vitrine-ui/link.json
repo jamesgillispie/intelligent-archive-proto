@@ -1,0 +1,19 @@
+{
+    "base": "inline-flex inline-flex items-center gap-8 effect-color effect-underline",
+    "variant": {
+        "primary": ""
+    },
+    "icon_only": {
+        "true": "",
+        "false": ""
+    },
+    "icon_position": {
+        "before": "",
+        "after": ""
+    },
+    "default": {
+        "variant": ""
+    },
+    "icon": "",
+    "label": ""
+}

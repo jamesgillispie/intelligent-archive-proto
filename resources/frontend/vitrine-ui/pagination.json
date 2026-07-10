@@ -1,0 +1,7 @@
+{
+    "base": "mb-140",
+    "wrapper": "md:flex w-full items-center gap-x-24",
+    "show-message": "hidden md:block f-ui-01",
+    "dropdown-wrapper": "md:flex items-center ml-auto mt-10 md:mt-0",
+    "dropdown": "pointer-events-none md:pointer-events-auto"
+}

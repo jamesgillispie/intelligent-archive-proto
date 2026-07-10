@@ -1,0 +1,61 @@
+# IDE Specific files
+/.idea
+/.vscode
+/.fleet
+
+# Dependencies
+/node_modules
+/vendor
+
+#File System
+.DS_Store
+
+#Cached files
+.stylelintcache
+
+# Log files
+npm-debug.log
+yarn-error.log
+*.log
+
+# Laravel specific
+.env
+.env.backup
+.env.dev
+.env.staging
+.env.production
+
+docker-compose.override.yml
+
+/.phpunit.cache
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+
+/public/hot
+/public/storage
+/public/build
+/public/css
+/public/js
+/public/mix-manifest.json
+/public/*.html
+/public/sitemap.xml
+/public/sitemap_*.xml
+
+/storage/*.key
+
+# PHP-CS-Fixer
+.php-cs-fixer.cache
+
+# Blast
+/public/storybook
+/public/storybook-static
+
+# Vapor
+/.vapor
+
+
+dump.rdb
+
+public/.htaccess

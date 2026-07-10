@@ -1,0 +1,13 @@
+{
+    "rules": {
+        "merge": ["select", "wrapper", "note", "error", "hint"]
+    },
+    "wrapper": "border-none",
+    "select": "appearance-none p-6 pl-16 pr-48 w-full f-ui-01 effect-focus effect-color border-none rounded-sm bg-transparent md:bg-inverse text-center",
+    "note": "f-ui-02",
+    "error": "f-ui-02",
+    "error-icon-name": "warning",
+    "icon": "absolute top-1/2 right-16 -translate-y-1/2 pointer-events-none w-20 h-20 text-primary hidden md:block",
+    "icon-name": "chevron-down-20",
+    "hint": "f-caption"
+}

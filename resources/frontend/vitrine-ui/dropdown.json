@@ -1,0 +1,13 @@
+{
+    "base": "relative group",
+    "trigger": "f-ui-02 flex text-primary p-12 pl-16 w-fit items-center effect-focus effect-color hover:text-secondary justify-between",
+    "icon": "group-data-[is-open]:rotate-180 effect-transform flex items-center justify-center ml-4 w-20 h-20",
+    "icon-name": "arrow-down-20",
+    "list": [
+        "absolute min-w-[200px] z-9999 bg-inverse shadow-01 rounded-xs mt-4",
+        "left-1/2 md:left-0 -translate-x-1/2 md:-translate-x-0 translate-y-20",
+        "opacity-0 effect-hidden-fade-translate",
+        "group-data-[is-open]:effect-show-fade-translate group-data-[is-open]:opacity-100 group-data-[is-open]:translate-y-0 group-data-[is-open]:-translate-x-1/2 md:group-data-[is-open]:-translate-x-0"
+    ],
+    "content": "p-20 space-y-12"
+}

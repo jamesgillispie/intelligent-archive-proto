@@ -1,0 +1,17 @@
+@layer components {
+    .anim-color {
+        @apply transition-colors duration-300 ease-out;
+    }
+
+    .anim-transform {
+        @apply transition-transform duration-300 ease-linear;
+    }
+
+    .anim-opacity {
+        @apply transition-opacity duration-300 ease-out;
+    }
+
+    .anim-all {
+        @apply transition-all duration-300 ease-out;
+    }
+}

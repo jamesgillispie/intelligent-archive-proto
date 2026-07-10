@@ -1,0 +1,76 @@
+---
+import:
+  - recipe/laravel.php
+
+config:
+  repository: "git@code.area17.com:a17/templates/laravel-twill-project.git"
+  keep_releases: 5
+  rsync_local: "rsync -a --stats"
+  ssh_control_path: "/tmp/ssh-%C"
+  default_timeout: 600
+
+hosts:
+  dev: &default
+    hostname: sandboxes-sandbox-1
+    deploy_path: "~/sites/laravel-template-dev"
+    remote_user: laravel-template
+    php_version: "8.4"
+    labels:
+      env: dev
+      role: primary
+
+tasks:
+  artisan:migrate:
+    - select: role=primary
+    - cd: "{{release_path}}"
+    - run: "{{bin/php}} artisan migrate --force"
+  deploy:npm:
+    - cd: "{{release_path}}"
+    - run: |
+        result=1
+
+        if [ -f {{current_path}}/package-lock.sha256 ]; then
+            cp -f {{current_path}}/package-lock.sha256 {{release_path}}/
+            output=$(sha256sum -c package-lock.sha256 >/dev/null)
+            result=$?
+        fi
+
+        if [ $result -eq 0 ]; then
+            echo "(rsync from current release)"
+            {{ rsync_local }} {{current_path}}/node_modules/ {{release_path}}/node_modules/
+        else
+            echo "(npm ci from zero)"
+            npm ci --ignore-scripts
+            sha256sum package-lock.json > package-lock.sha256
+        fi
+
+  deploy:sync-assets:
+    - cd: "{{release_path}}"
+    - run: |
+        if [ -d {{current_path}}/public/build/assets ]; then
+            echo "(copy current release assets)"
+            {{ rsync_local }} --ignore-existing {{current_path}}/public/build/assets/ {{release_path}}/public/build/assets/
+        fi
+
+  deploy:build-assets:
+    - cd: "{{release_path}}"
+    - run: npm run build
+
+  deploy:build-storybook:
+    - select: role=primary
+    - cd: "{{release_path}}"
+    - run: "{{bin/php}} artisan blast:publish --output-dir storybook"
+
+after:
+  deploy:vendors:
+    - deploy:npm
+
+  deploy:npm:
+    - deploy:build-assets
+
+  deploy:build-assets:
+    - deploy:sync-assets
+    - deploy:build-storybook
+
+  deploy:failed:
+    - deploy:unlock

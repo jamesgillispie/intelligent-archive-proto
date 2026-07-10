@@ -1,0 +1,5 @@
+{
+    "base": "w-full py-16 lg:py-24 flex items-center flex-start md:justify-center gap-24",
+    "item": "text-secondary aria-[current=page]:text-primary border-none",
+    "link": "effect-color hover:text-primary effect-focus focus-visible:text-primary focus-visible:rounded-xs"
+}

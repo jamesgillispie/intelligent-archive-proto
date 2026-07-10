@@ -1,0 +1,21 @@
+/* Base */
+@import "tailwindcss/base";
+@import "base/fonts.css";
+@import "base/layouts.css";
+@import "base/motion.css";
+@import "base/transitions.css";
+
+/* Third party */
+
+/* Components */
+@import "tailwindcss/components";
+@import "components/animations.css";
+@import "components/blocks.css";
+@import "components/lazyload.css";
+@import "components/tabs.css";
+@import "components/wysiwyg.css";
+
+/* Utilities */
+@import "tailwindcss/utilities";
+@import "utilities/effect.css";
+@import "utilities/overflow.css";

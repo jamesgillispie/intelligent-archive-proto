@@ -1,0 +1,15 @@
+{
+    "rules": {
+        "merge": ["input", "wrapper", "note", "error", "hint"]
+    },
+    "wrapper": "border-none",
+    "input": "appearance-none f-ui-02 effect-focus effect-color border border-quaternary hover:border-secondary active:border-secondary",
+    "checkbox-label": "relative pl-28",
+    "checkbox-label-error": "text-error",
+    "checkbox": "appearance-none f-ui-02 effect-focus effect-color border border-quaternary hover:border-secondary active:border-secondary shrink w-16 h-16 mr-16 absolute top-4 left-0 checked:border-secondary checked:bg-primary",
+    "checkbox-error": "!border-error checked:!border-error checked:!bg-error",
+    "checkbox-check": "absolute -left-2 top-0 w-20 h-20 top-2 -left-2 pointer-events-none text-inverse",
+    "note": "f-ui-02",
+    "error": "f-ui-02",
+    "hint": "f-caption"
+}

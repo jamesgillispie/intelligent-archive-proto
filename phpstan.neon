@@ -1,0 +1,32 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+    - ./vendor/timeweb/phpstan-enum/extension.neon
+
+parameters:
+    level: 6
+
+    paths:
+        - app
+
+    # files necessary for Larastan to understand the models (regenerated on
+    # new migrations)
+    scanFiles:
+        - _ide_helper_models.php
+
+    ignoreErrors:
+        -
+         identifier: missingType.iterableValue
+        -
+         identifier: missingType.generics
+
+    # avoids `phpstan` from picking these helper files that do not comply with
+    # PHPStan itself
+    excludePaths:
+        - config
+        - _ide_helper_models.php
+        - _ide_helper.php
+
+    universalObjectCratesClasses:
+
+    reportUnmatchedIgnoredErrors: false
+

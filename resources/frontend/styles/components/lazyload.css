@@ -1,0 +1,21 @@
+@layer components {
+    picture:not(.no-lazy-transition),
+    img:not(.no-lazy-transition),
+    iframe:not(.no-lazy-transition) {
+        @apply border-none opacity-100 outline-none transition-opacity duration-700 ease-out;
+    }
+
+    img[data-src]:not([src^="data:image"]),
+    img[data-srcset]:not([src^="data:image"]),
+    iframe[data-src] {
+        @apply opacity-0;
+    }
+
+    img[data-lazy-img] {
+        @apply opacity-0 duration-500 ease-out-sine;
+
+        &[data-loaded] {
+            @apply opacity-100;
+        }
+    }
+}

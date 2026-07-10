@@ -1,0 +1,66 @@
+<?php
+
+namespace App\Providers;
+
+use A17\Twill\Facades\TwillNavigation;
+use A17\Twill\Facades\TwillAppSettings;
+use Illuminate\Support\ServiceProvider;
+use A17\Twill\Services\Settings\SettingsGroup;
+use A17\Twill\View\Components\Navigation\NavigationLink;
+
+class TwillServiceProvider extends ServiceProvider
+{
+    public function register(): void {}
+
+    public function boot(): void
+    {
+        $this->navigation();
+    }
+
+    protected function navigation(): void
+    {
+        TwillNavigation::clear();
+
+        TwillNavigation::addLink(NavigationLink::make()->forSingleton('homepage'));
+
+        TwillNavigation::addLink(
+            NavigationLink::make()
+                ->forModule('articles')
+                ->title('Articles')
+                ->doNotAddSelfAsFirstChild()
+                ->setChildren([
+                    NavigationLink::make()->forModule('articles'),
+                    NavigationLink::make()->forModule('articleTypes')->title('Article types'),
+                ]),
+        );
+
+        TwillNavigation::addLink(NavigationLink::make()->forSingleton('aboutLanding')->title('About'));
+
+        TwillNavigation::addLink(NavigationLink::make()->forSingleton('contactLanding')->title('Contact'));
+
+        TwillNavigation::addLink(
+            NavigationLink::make()
+                ->forModule('pages')
+                ->doNotAddSelfAsFirstChild()
+                ->setChildren([
+                    NavigationLink::make()->forModule('pages'),
+
+                    NavigationLink::make()
+                        ->forRoute('twill.app.settings.page', ['group' => 'footer'])
+                        ->title('Footer settings'),
+                ])
+                ->title('Global'),
+        );
+
+        TwillAppSettings::registerSettingsGroups(
+            SettingsGroup::make()->name('footer')->label('Footer settings')->doNotAutoRegisterMenu(),
+        );
+
+        TwillAppSettings::registerSettingsGroups(
+            SettingsGroup::make()->name('seo')->label(trans('twill-metadata::form.titles.fieldset')),
+        );
+
+        // Prevent twill-metadata from throwing an error is not global Settings has been saved yet
+        TwillAppSettings::getGroupForName('seo')->boot();
+    }
+}

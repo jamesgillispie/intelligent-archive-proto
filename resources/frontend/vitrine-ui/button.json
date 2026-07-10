@@ -1,0 +1,24 @@
+{
+    "base": "flex items-center effect-color effect-focus disabled:cursor-not-allowed",
+    "variant": {
+        "primary": "",
+        "secondary": ""
+    },
+    "size": {
+        "sm": "",
+        "md": ""
+    },
+    "icon_only": {
+        "true": "",
+        "false": "w-fit"
+    },
+    "icon_position": {
+        "before": "pl-12",
+        "after": "pr-12"
+    },
+    "default": {
+        "variant": "primary",
+        "size": "sm"
+    },
+    "label": ""
+}

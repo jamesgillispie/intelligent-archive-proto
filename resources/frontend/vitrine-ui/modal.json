@@ -1,0 +1,6 @@
+{
+    "base": "group fixed inset-0 flex flex-col z-999 effect-hidden-fade data-[active]:effect-show-fade data-[active]:opacity-100",
+    "wrapper": {
+        "overlay": "relative max-h-full overflow-x-hidden overflow-y-scroll transition-opacity"
+    }
+}

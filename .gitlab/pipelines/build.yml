@@ -1,0 +1,110 @@
+# ---
+# Pipeline: Build & Deploy
+#
+# Objective is to keep the deployment as fast as possible.
+#
+# Aim to limit checks to minimum unless targeting a production-like
+# environment.
+
+image: ghcr.io/luislavena/hydrofoil-php:8.4
+
+# ---
+# sequence
+
+stages:
+  - audit
+  - prepare
+  # FIXME: enable tests
+  # - test
+  - deploy
+  - cleanup
+
+include:
+  - local: .gitlab/shared/install-dependencies.yml
+
+# ---
+# jobs
+
+# Before installing the dependencies, we need first to check vulnerabilities in the locked versions.
+# If that is the case, the pipeline will fail.
+
+audit-composer-packages:
+  stage: audit
+
+  script:
+    - composer audit --locked --abandoned=report
+
+audit-npm-packages:
+  stage: audit
+
+  script:
+    - npm audit
+
+# TODO: add tests
+
+deploy:
+  stage: deploy
+
+  extends:
+    - .need-dependencies
+
+  needs:
+    - audit-composer-packages
+    - audit-npm-packages
+
+  # FIXME: mark tests as needed
+  # needs:
+  #   - test
+
+  environment: $TARGET_ENV
+  resource_group: $TARGET_ENV
+
+  variables: &deploy_variables
+    DEPLOYER_VERSION: "7.5.12"
+    DEPLOYER_SHA256: "b55c6609653e888c672d327c407f8bba6324b9c9cc24f9dcfb3f4b3922760632"
+
+  before_script: &prepare_deploy_stage # ssh-agent & keys
+    - "which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )"
+    - eval $(ssh-agent -s)
+    - ssh-add <(echo "$SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - chmod 0700 ~/.ssh
+    - echo "$SSH_CONFIG" > ~/.ssh/config
+    - chmod 0600 ~/.ssh/config
+    - echo "$SSH_REPO_KNOWN_HOSTS" > ~/.ssh/known_hosts
+    - echo "$SSH_SERVER_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - chmod 0600 ~/.ssh/known_hosts
+
+    # deployer
+    - curl --fail -Lo deployer.phar https://github.com/deployphp/deployer/releases/download/v$DEPLOYER_VERSION/deployer.phar
+    - echo "$DEPLOYER_SHA256 *deployer.phar" | sha256sum -c - >/dev/null 2>&1
+    - chmod +x deployer.phar
+    - mv deployer.phar /usr/local/bin/dep
+
+  script:
+    - dep --file=.gitlab/deploy.yaml deploy env=$TARGET_ENV --revision=$CI_COMMIT_SHA
+
+  rules:
+    - if: $TARGET_ENV != "production"
+      when: always
+
+    - if: $TARGET_ENV == "production"
+      when: manual
+
+unlock_deployment_failure:
+  stage: cleanup
+  when: on_failure
+
+  needs:
+    - deploy
+
+  environment:
+    name: $TARGET_ENV
+    action: access
+
+  variables: *deploy_variables
+
+  before_script: *prepare_deploy_stage
+
+  script:
+    - dep --file=.gitlab/deploy.yaml deploy:unlock env=$TARGET_ENV

@@ -1,0 +1,30 @@
+@layer base {
+    html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 1rem;
+    }
+
+    body {
+        @apply overflow-x-hidden bg-default text-primary antialiased;
+
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    main[tabindex="-1"] {
+        @apply outline-none;
+    }
+
+    [hidden] {
+        display: none !important;
+    }
+
+    [inert] {
+        pointer-events: none;
+        cursor: default;
+    }
+
+    [inert],
+    [inert] * {
+        user-select: none;
+    }
+}

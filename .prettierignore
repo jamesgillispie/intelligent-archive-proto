@@ -1,0 +1,13 @@
+*.md
+*.lock
+*.svg
+
+storage
+vendor
+node_modules
+public
+
+.platform
+server.php
+bootstrap/*
+artisan

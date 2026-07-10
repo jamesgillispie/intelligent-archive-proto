@@ -1,0 +1,47 @@
+---
+version: "3.9"
+name: laravel-twill-project
+
+services:
+  app:
+    image: ghcr.io/luislavena/hydrofoil-php:8.4
+    command: overmind start -f Procfile.dev
+    working_dir: /app
+    # Set these env variables using `export FIXUID=$(id -u) FIXGID=$(id -g)`
+    user: ${FIXUID:-1000}:${FIXGID:-1000}
+    depends_on:
+      - mailpit
+      - pgsql
+    labels:
+      # OrbStack: enable *.laravel-twill-project.local for HTTP and
+      # HTTPS support
+      #
+      # Ref: https://docs.orbstack.dev/docker/domains#custom
+      - dev.orbstack.domains=*.${COMPOSE_PROJECT_NAME}.local
+    volumes:
+      - .:/app
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    volumes:
+      - mailpit:/data
+
+  pgsql:
+    image: bitnamilegacy/postgresql:17
+    environment:
+      - POSTGRESQL_DATABASE=db
+      - POSTGRESQL_USERNAME=user
+      - POSTGRESQL_PASSWORD=secret
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgsql:/bitnami/postgresql
+
+volumes:
+  mailpit:
+    driver: local
+  pgsql:
+    driver: local

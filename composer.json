@@ -1,0 +1,106 @@
+{
+    "name": "laravel-twill-project/website",
+    "type": "project",
+    "repositories": [
+        {
+            "url": "https://github.com/area17/vitrine-ui.git",
+            "type": "git"
+        }
+    ],
+    "require": {
+        "php": "^8.4",
+        "ext-openssl": "*",
+        "area17/blast": "^1.10",
+        "area17/twill": "^3.5.3",
+        "area17/twill-image": "^2.0",
+        "area17/vitrine-ui": "^3.0.2",
+        "cwsdigital/twill-metadata": "^1.4",
+        "gehrisandro/tailwind-merge-laravel": "^1.2",
+        "guzzlehttp/guzzle": "^7.8",
+        "laravel/framework": "^11.0",
+        "laravel/sanctum": "^4.0",
+        "laravel/tinker": "^2.9",
+        "spatie/laravel-sitemap": "^7.0"
+    },
+    "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.1",
+        "fakerphp/faker": "^1.23",
+        "friendsofphp/php-cs-fixer": "^3.40",
+        "larastan/larastan": "^2.9.7",
+        "laravel/pint": "^1.13",
+        "laravel/sail": "^1.26",
+        "mockery/mockery": "^1.6",
+        "nunomaduro/collision": "^8.0",
+        "phpstan/phpstan": "^1.10.46",
+        "phpunit/phpunit": "^10.5",
+        "spatie/laravel-ignition": "^2.4",
+        "timeweb/phpstan-enum": "^3.1"
+    },
+    "autoload": {
+        "files": [
+            "app/Support/helpers.php"
+        ],
+        "psr-4": {
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover --ansi"
+        ],
+        "post-update-cmd": [
+            "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+            "@php artisan ide-helper:generate"
+        ],
+        "post-root-package-install": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "@php artisan key:generate --ansi",
+            "@php -r \"file_exists('database/database.sqlite') || touch('database/database.sqlite');\"",
+            "@php artisan migrate --graceful --ansi"
+        ],
+        "lint": [
+            "sh tools/linters.sh lint"
+        ],
+        "format": [
+            "sh tools/linters.sh format"
+        ],
+        "prettify": [
+            "sh tools/linters.sh prettify"
+        ],
+        "prettier": [
+            "sh tools/linters.sh prettier"
+        ],
+        "php-cs-fixer": [
+            "sh tools/linters.sh php-cs-fixer"
+        ],
+        "phpstan": [
+            "sh tools/linters.sh phpstan"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "dont-discover": []
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
