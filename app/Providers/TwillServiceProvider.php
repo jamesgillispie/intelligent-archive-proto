@@ -46,6 +46,7 @@ class TwillServiceProvider extends ServiceProvider
                     NavigationLink::make()->forModule('classifications')->title('Classifications'),
                     NavigationLink::make()->forModule('departments')->title('Departments'),
                     NavigationLink::make()->forModule('mediums')->title('Mediums'),
+                    NavigationLink::make()->forRoute('twill.importBatches.index')->title('Import batches'),
                 ]),
         );
 
