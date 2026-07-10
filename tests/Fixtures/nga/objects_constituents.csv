@@ -5,3 +5,4 @@ objectid,constituentid,role,roletype,displayorder
 101,901,painter,artist,1
 103,902,sculptor,artist,1
 104,900,painter,artist,1
+104,900,painter,artist,2

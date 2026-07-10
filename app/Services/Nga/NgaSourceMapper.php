@@ -14,8 +14,11 @@ use App\Models\Source\SourceRecord;
  */
 class NgaSourceMapper
 {
-    /** @var array<string, array<string, int>> table => [created|updated|unchanged => n] */
+    /** @var array<string, array<string, int>> table => [created|updated|unchanged|duplicate_in_source => n] */
     protected array $counts = [];
+
+    /** @var array<string, true> source ids already written this run */
+    protected array $seenThisRun = [];
 
     /**
      * @param  array<string, string>  $payload raw CSV row, verbatim
@@ -26,6 +29,22 @@ class NgaSourceMapper
         $now = now();
 
         $record = SourceRecord::query()->forTable($sourceTable)->where('source_id', $sourceId)->first();
+
+        // NGA occasionally ships several rows with an identical key in one
+        // snapshot (observed on objects_constituents "related artist" rows).
+        // First row wins deterministically; without this, the siblings fight
+        // over one record and report "updated" forever.
+        $seenKey = "{$sourceTable}\x00{$sourceId}";
+
+        if (isset($this->seenThisRun[$seenKey])) {
+            if ($record !== null && $record->content_hash !== $hash) {
+                $this->count($sourceTable, 'duplicate_in_source');
+
+                return $record;
+            }
+        } else {
+            $this->seenThisRun[$seenKey] = true;
+        }
 
         if ($record === null) {
             $this->count($sourceTable, 'created');
@@ -95,6 +114,7 @@ class NgaSourceMapper
     public function resetCounts(): void
     {
         $this->counts = [];
+        $this->seenThisRun = [];
     }
 
     protected function count(string $sourceTable, string $result): void

@@ -100,17 +100,20 @@ class NgaImportTest extends TestCase
         $this->assertSame(2, SourceImport::count());
 
         // The second run reported zero created/updated rows anywhere —
-        // including objects_constituents pairs that carry multiple role rows.
+        // including objects_constituents pairs that carry multiple role rows
+        // and NGA's occasional exact-duplicate keys (counted, not written).
         /** @var array<string, array<string, int>> $counts */
         $counts = SourceImport::query()->latest('id')->firstOrFail()->report['source_records'];
 
         foreach ($counts as $table => $results) {
             $this->assertSame(
-                ['unchanged'],
-                array_keys($results),
-                "Second run reported non-unchanged rows for {$table}",
+                [],
+                array_intersect(array_keys($results), ['created', 'updated']),
+                "Second run reported created/updated rows for {$table}",
             );
         }
+
+        $this->assertSame(1, $counts['objects_constituents']['duplicate_in_source'] ?? null);
     }
 
     public function testDuplicateJoinRowsWithDifferentRolesAreKeyedSeparately(): void
