@@ -36,8 +36,12 @@ class NgaImportService
     /**
      * @return array<string, mixed> count report
      */
-    public function run(?int $limit = null, ?string $path = null, bool $queueCanonicalization = true): array
-    {
+    public function run(
+        ?int $limit = null,
+        ?string $path = null,
+        bool $queueCanonicalization = true,
+        bool $downloadImages = true,
+    ): array {
         $this->environment->validate(['base', 'nga-import']);
 
         $path = rtrim($path ?: config('nga.open_data_path'), '/');
@@ -54,7 +58,7 @@ class NgaImportService
         $this->mapper->resetCounts();
 
         try {
-            $report = $this->execute($import, $path, $limit, $queueCanonicalization);
+            $report = $this->execute($import, $path, $limit, $queueCanonicalization, $downloadImages);
         } catch (\Throwable $exception) {
             $import->update(['status' => SourceImport::STATUS_FAILED, 'finished_at' => now()]);
 
@@ -75,7 +79,7 @@ class NgaImportService
     /**
      * @return array<string, mixed>
      */
-    protected function execute(SourceImport $import, string $path, int $limit, bool $queue): array
+    protected function execute(SourceImport $import, string $path, int $limit, bool $queue, bool $downloadImages): array
     {
         // Pass 1: object ids that have a primary published image.
         $withPrimaryImage = [];
@@ -166,7 +170,7 @@ class NgaImportService
 
         // Canonicalize: queue-friendly, one job per object.
         foreach (array_keys($selected) as $objectId) {
-            $job = new CanonicalizeArtwork((string) $objectId);
+            $job = new CanonicalizeArtwork((string) $objectId, $downloadImages);
 
             $queue ? dispatch($job) : dispatch_sync($job);
         }

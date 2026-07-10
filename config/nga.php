@@ -23,8 +23,14 @@ return [
     ],
 
     'iiif' => [
-        // Phase 2: image validation over the NGA IIIF endpoints.
-        'timeout' => (int) env('NGA_IIIF_TIMEOUT', 10),
-        'rate_limit_per_minute' => (int) env('NGA_IIIF_RATE_LIMIT_PER_MIN', 60),
+        // Image download/validation over the NGA IIIF endpoints.
+        'timeout' => (int) env('NGA_IIIF_TIMEOUT', 15),
+        'rate_limit_per_minute' => (int) env('NGA_IIIF_RATE_LIMIT_PER_MIN', 120),
+    ],
+
+    'images' => [
+        // Bounding box (pixels) for downloaded primary images. Other sizes
+        // remain derivable from the stored IIIF base URL at any time.
+        'download_size' => (int) env('NGA_IMAGE_DOWNLOAD_SIZE', 1600),
     ],
 ];

@@ -733,6 +733,8 @@ namespace App\Twill\Capsules\Artworks\Models {
      * @property-read mixed $social_image
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Artworks\Models\ImageAsset> $images
      * @property-read int|null $images_count
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Media> $medias
+     * @property-read int|null $medias_count
      * @property-read \App\Twill\Capsules\Mediums\Models\Medium|null $medium
      * @property-read \CwsDigital\TwillMetadata\Models\Metadata|null $metadata
      * @property-read \App\Twill\Capsules\Artworks\Models\ImageAsset|null $primaryImage
@@ -870,10 +872,11 @@ namespace App\Twill\Capsules\Artworks\Models {
 
 namespace App\Twill\Capsules\Artworks\Models {
     /**
-     * A published NGA IIIF image for an artwork. Remote by design: NGA serves
-     * open-access imagery over IIIF, so the Twill media library (uploaded
-     * files) is deliberately not used for artwork imagery. The rights signal
-     * lives here — an artwork without a validated image renders metadata-only.
+     * A published NGA IIIF image for an artwork. The IIIF metadata (base URL,
+     * native dimensions, rights cap) is the durable record — any size can be
+     * re-derived from it without re-scanning the dataset. A downloaded copy is
+     * attached to the artwork as Twill media (`media_id`); the download is a
+     * cache of the IIIF source, never a replacement for it.
      *
      * @property int $id
      * @property int $artwork_id
@@ -891,19 +894,26 @@ namespace App\Twill\Capsules\Artworks\Models {
      * @property int $position
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property int|null $media_id
+     * @property \Illuminate\Support\Carbon|null $downloaded_at
+     * @property string|null $failure_reason
      * @property-read \App\Twill\Capsules\Artworks\Models\Artwork $artwork
+     * @property-read \A17\Twill\Models\Media|null $media
      * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset query()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereArtworkId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereAssistiveText($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereDownloadedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereFailureReason($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereHeight($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereIiifThumbUrl($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereIiifUrl($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereIsPrimary($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereMaxPixels($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereMediaId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereNgaUuid($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset wherePosition($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|ImageAsset whereUpdatedAt($value)
@@ -1573,25 +1583,25 @@ namespace A17\Twill\Models {
      * @property-write mixed $publish_start_date
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Tag> $tags
      * @property-read int|null $tags_count
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting accessible()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting draft()
+     * @method static Builder<static>|AppSetting accessible()
+     * @method static Builder<static>|AppSetting draft()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting onlyTrashed()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting published()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting publishedInListings()
+     * @method static Builder<static>|AppSetting onlyTrashed()
+     * @method static Builder<static>|AppSetting published()
+     * @method static Builder<static>|AppSetting publishedInListings()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting query()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting visible()
+     * @method static Builder<static>|AppSetting visible()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting whereDeletedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting whereId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting whereName($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting wherePublished($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting whereTag($tags, string $type = 'slug')
+     * @method static Builder<static>|AppSetting whereTag($tags, string $type = 'slug')
      * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting whereUpdatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting withTag($tags, string $type = 'slug')
+     * @method static Builder<static>|AppSetting withTag($tags, string $type = 'slug')
      * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting withTrashed(bool $withTrashed = true)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting withoutTag($tags, string $type = 'slug')
+     * @method static Builder<static>|AppSetting withoutTag($tags, string $type = 'slug')
      * @method static \Illuminate\Database\Eloquent\Builder<static>|AppSetting withoutTrashed()
      * @mixin \Eloquent
      */
@@ -1610,7 +1620,7 @@ namespace A17\Twill\Models {
      * @property string|null $child_key
      * @property int|null $parent_id
      * @property string|null $editor_name
-     * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent|null $blockable
+     * @property-read BaseModel|\Eloquent|null $blockable
      * @property-read \Illuminate\Database\Eloquent\Collection<int, Block> $children
      * @property-read int|null $children_count
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\File> $files
@@ -1620,23 +1630,23 @@ namespace A17\Twill\Models {
      * @property-read int|null $medias_count
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\RelatedItem> $relatedItems
      * @property-read int|null $related_items_count
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Block accessible()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Block draft()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Block editor($name = 'default')
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Block newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Block newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Block onlyTrashed()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Block published()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Block query()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Block whereBlockableId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Block whereBlockableType($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Block whereChildKey($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Block whereContent($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Block whereEditorName($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Block whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Block whereParentId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Block wherePosition($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Block whereType($value)
+     * @method static Builder<static>|Block accessible()
+     * @method static Builder<static>|Block draft()
+     * @method static Builder<static>|Block editor($name = 'default')
+     * @method static Builder<static>|Block newModelQuery()
+     * @method static Builder<static>|Block newQuery()
+     * @method static Builder<static>|Block onlyTrashed()
+     * @method static Builder<static>|Block published()
+     * @method static Builder<static>|Block query()
+     * @method static Builder<static>|Block whereBlockableId($value)
+     * @method static Builder<static>|Block whereBlockableType($value)
+     * @method static Builder<static>|Block whereChildKey($value)
+     * @method static Builder<static>|Block whereContent($value)
+     * @method static Builder<static>|Block whereEditorName($value)
+     * @method static Builder<static>|Block whereId($value)
+     * @method static Builder<static>|Block whereParentId($value)
+     * @method static Builder<static>|Block wherePosition($value)
+     * @method static Builder<static>|Block whereType($value)
      * @mixin \Eloquent
      */
     #[\AllowDynamicProperties]
@@ -1653,19 +1663,19 @@ namespace A17\Twill\Models {
      * @property bool $starred
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property \Illuminate\Support\Carbon|null $updated_at
-     * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $featured
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Feature forBucket(string $bucketKey)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Feature newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Feature newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Feature query()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Feature whereBucketKey($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Feature whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Feature whereFeaturedId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Feature whereFeaturedType($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Feature whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Feature wherePosition($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Feature whereStarred($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Feature whereUpdatedAt($value)
+     * @property-read BaseModel|\Eloquent $featured
+     * @method static Builder<static>|Feature forBucket(string $bucketKey)
+     * @method static Builder<static>|Feature newModelQuery()
+     * @method static Builder<static>|Feature newQuery()
+     * @method static Builder<static>|Feature query()
+     * @method static Builder<static>|Feature whereBucketKey($value)
+     * @method static Builder<static>|Feature whereCreatedAt($value)
+     * @method static Builder<static>|Feature whereFeaturedId($value)
+     * @method static Builder<static>|Feature whereFeaturedType($value)
+     * @method static Builder<static>|Feature whereId($value)
+     * @method static Builder<static>|Feature wherePosition($value)
+     * @method static Builder<static>|Feature whereStarred($value)
+     * @method static Builder<static>|Feature whereUpdatedAt($value)
      * @mixin \Eloquent
      */
     #[\AllowDynamicProperties]
@@ -1684,27 +1694,27 @@ namespace A17\Twill\Models {
      * @property-write mixed $publish_start_date
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Tag> $tags
      * @property-read int|null $tags_count
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|File accessible()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|File draft()
+     * @method static Builder<static>|File accessible()
+     * @method static Builder<static>|File draft()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|File newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|File newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|File onlyTrashed()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|File published()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|File publishedInListings()
+     * @method static Builder<static>|File onlyTrashed()
+     * @method static Builder<static>|File published()
+     * @method static Builder<static>|File publishedInListings()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|File query()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|File unused()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|File visible()
+     * @method static Builder<static>|File visible()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereDeletedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereFilename($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereSize($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereTag($tags, string $type = 'slug')
+     * @method static Builder<static>|File whereTag($tags, string $type = 'slug')
      * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|File whereUuid($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|File withTag($tags, string $type = 'slug')
+     * @method static Builder<static>|File withTag($tags, string $type = 'slug')
      * @method static \Illuminate\Database\Eloquent\Builder<static>|File withTrashed(bool $withTrashed = true)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|File withoutTag($tags, string $type = 'slug')
+     * @method static Builder<static>|File withoutTag($tags, string $type = 'slug')
      * @method static \Illuminate\Database\Eloquent\Builder<static>|File withoutTrashed()
      * @mixin \Eloquent
      */
@@ -1722,15 +1732,15 @@ namespace A17\Twill\Models {
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Permission> $permissions
      * @property-read int|null $permissions_count
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\User> $users
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Group accessible()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Group draft()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Group newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Group newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Group onlyTrashed()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Group published()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Group query()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Group withTrashed(bool $withTrashed = true)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Group withoutTrashed()
+     * @method static Builder<static>|Group accessible()
+     * @method static Builder<static>|Group draft()
+     * @method static Builder<static>|Group newModelQuery()
+     * @method static Builder<static>|Group newQuery()
+     * @method static Builder<static>|Group onlyTrashed()
+     * @method static Builder<static>|Group published()
+     * @method static Builder<static>|Group query()
+     * @method static Builder<static>|Group withTrashed(bool $withTrashed = true)
+     * @method static Builder<static>|Group withoutTrashed()
      * @mixin \Eloquent
      */
     #[\AllowDynamicProperties]
@@ -1753,16 +1763,16 @@ namespace A17\Twill\Models {
      * @property-write mixed $publish_start_date
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Tag> $tags
      * @property-read int|null $tags_count
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Media accessible()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Media draft()
+     * @method static Builder<static>|Media accessible()
+     * @method static Builder<static>|Media draft()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Media newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Media newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Media onlyTrashed()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Media published()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Media publishedInListings()
+     * @method static Builder<static>|Media onlyTrashed()
+     * @method static Builder<static>|Media published()
+     * @method static Builder<static>|Media publishedInListings()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Media query()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Media unused()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Media visible()
+     * @method static Builder<static>|Media visible()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereAltText($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereCaption($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereCreatedAt($value)
@@ -1770,13 +1780,13 @@ namespace A17\Twill\Models {
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereFilename($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereHeight($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereTag($tags, string $type = 'slug')
+     * @method static Builder<static>|Media whereTag($tags, string $type = 'slug')
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereUuid($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Media whereWidth($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Media withTag($tags, string $type = 'slug')
+     * @method static Builder<static>|Media withTag($tags, string $type = 'slug')
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Media withTrashed(bool $withTrashed = true)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Media withoutTag($tags, string $type = 'slug')
+     * @method static Builder<static>|Media withoutTag($tags, string $type = 'slug')
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Media withoutTrashed()
      * @mixin \Eloquent
      */
@@ -1789,20 +1799,20 @@ namespace A17\Twill\Models {
      * @property-read string $permissionable_module
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Group> $groups
      * @property-read int|null $groups_count
-     * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $permissionable
+     * @property-read BaseModel|\Eloquent $permissionable
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Role> $roles
      * @property-read int|null $roles_count
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\User> $users
      * @property-read int|null $users_count
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission global()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission module()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission moduleItem()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission ofItem(\Illuminate\Database\Eloquent\Model $item)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission ofModel(string $model)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission ofModuleName(string $moduleName)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Permission query()
+     * @method static Builder<static>|Permission global()
+     * @method static Builder<static>|Permission module()
+     * @method static Builder<static>|Permission moduleItem()
+     * @method static Builder<static>|Permission newModelQuery()
+     * @method static Builder<static>|Permission newQuery()
+     * @method static Builder<static>|Permission ofItem(\Illuminate\Database\Eloquent\Model $item)
+     * @method static Builder<static>|Permission ofModel(string $model)
+     * @method static Builder<static>|Permission ofModuleName(string $moduleName)
+     * @method static Builder<static>|Permission query()
      * @mixin \Eloquent
      */
     #[\AllowDynamicProperties]
@@ -1818,8 +1828,8 @@ namespace A17\Twill\Models {
      * @property string $related_type
      * @property string $browser_name
      * @property int $position
-     * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent|null $related
-     * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent|null $subject
+     * @property-read BaseModel|\Eloquent|null $related
+     * @property-read BaseModel|\Eloquent|null $subject
      * @method static \Illuminate\Database\Eloquent\Builder<static>|RelatedItem newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|RelatedItem newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|RelatedItem query()
@@ -1838,24 +1848,24 @@ namespace A17\Twill\Models {
 
 namespace A17\Twill\Models {
     /**
-     * @property-read \Illuminate\Database\Eloquent\Collection $accessible_roles
+     * @property-read Collection $accessible_roles
      * @property-read string $created_at
      * @property-read int|null $users_count
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Media> $medias
+     * @property-read Collection<int, \A17\Twill\Models\Media> $medias
      * @property-read int|null $medias_count
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Permission> $permissions
+     * @property-read Collection<int, \A17\Twill\Models\Permission> $permissions
      * @property-read int|null $permissions_count
-     * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\User> $users
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Role accessible()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Role draft()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Role newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Role newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Role onlyTrashed()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Role ordered()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Role published()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Role query()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Role withTrashed(bool $withTrashed = true)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Role withoutTrashed()
+     * @property-read Collection<int, \A17\Twill\Models\User> $users
+     * @method static Builder<static>|Role accessible()
+     * @method static Builder<static>|Role draft()
+     * @method static Builder<static>|Role newModelQuery()
+     * @method static Builder<static>|Role newQuery()
+     * @method static Builder<static>|Role onlyTrashed()
+     * @method static Builder<static>|Role ordered()
+     * @method static Builder<static>|Role published()
+     * @method static Builder<static>|Role query()
+     * @method static Builder<static>|Role withTrashed(bool $withTrashed = true)
+     * @method static Builder<static>|Role withoutTrashed()
      * @mixin \Eloquent
      */
     #[\AllowDynamicProperties]
@@ -1881,37 +1891,37 @@ namespace A17\Twill\Models {
      * @property string $value
      * @property string $locale
      * @property string $active
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting accessible()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting draft()
+     * @method static Builder<static>|Setting accessible()
+     * @method static Builder<static>|Setting draft()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting listsTranslations(string $translationField)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting notTranslatedIn(?string $locale = null)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting onlyTrashed()
+     * @method static Builder<static>|Setting onlyTrashed()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting orWhereTranslation(string $translationField, $value, ?string $locale = null)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting orWhereTranslationLike(string $translationField, $value, ?string $locale = null)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting orderByRawByTranslation($orderRawString, $groupByField, $locale = null)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting orderByTranslation($orderField, $orderType = 'ASC', $locale = null)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting published()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting publishedInListings()
+     * @method static Builder<static>|Setting published()
+     * @method static Builder<static>|Setting publishedInListings()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting query()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting translated()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting translatedIn(?string $locale = null)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting visible()
+     * @method static Builder<static>|Setting visible()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting whereDeletedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting whereId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting whereKey($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting whereSection($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting whereTag($tags, string $type = 'slug')
+     * @method static Builder<static>|Setting whereTag($tags, string $type = 'slug')
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting whereTranslation(string $translationField, $value, ?string $locale = null, string $method = 'whereHas', string $operator = '=')
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting whereTranslationLike(string $translationField, $value, ?string $locale = null)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting withActiveTranslations(?string $locale = null)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting withTag($tags, string $type = 'slug')
+     * @method static Builder<static>|Setting withTag($tags, string $type = 'slug')
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting withTranslation(?string $locale = null)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting withTrashed(bool $withTrashed = true)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting withoutTag($tags, string $type = 'slug')
+     * @method static Builder<static>|Setting withoutTag($tags, string $type = 'slug')
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Setting withoutTrashed()
      * @mixin \Eloquent
      */
@@ -1929,11 +1939,11 @@ namespace A17\Twill\Models {
      * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $taggable
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Tagged> $tagged
      * @property-read int|null $tagged_count
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Tag name(string $name)
+     * @method static Builder<static>|Tag name(string $name)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Tag newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Tag newQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Tag query()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|Tag slug(string $slug)
+     * @method static Builder<static>|Tag slug(string $slug)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Tag whereCount($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Tag whereId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|Tag whereName($value)
@@ -1977,27 +1987,27 @@ namespace A17\Twill\Models\Translations {
      * @property-write mixed $publish_start_date
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\Tag> $tags
      * @property-read int|null $tags_count
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation accessible()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation draft()
+     * @method static Builder<static>|SettingTranslation accessible()
+     * @method static Builder<static>|SettingTranslation draft()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation onlyTrashed()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation published()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation publishedInListings()
+     * @method static Builder<static>|SettingTranslation onlyTrashed()
+     * @method static Builder<static>|SettingTranslation published()
+     * @method static Builder<static>|SettingTranslation publishedInListings()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation query()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation visible()
+     * @method static Builder<static>|SettingTranslation visible()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation whereActive($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation whereCreatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation whereDeletedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation whereId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation whereLocale($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation whereTag($tags, string $type = 'slug')
+     * @method static Builder<static>|SettingTranslation whereTag($tags, string $type = 'slug')
      * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation whereTwillSettingId($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation whereUpdatedAt($value)
      * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation whereValue($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation withTag($tags, string $type = 'slug')
+     * @method static Builder<static>|SettingTranslation withTag($tags, string $type = 'slug')
      * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation withTrashed(bool $withTrashed = true)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation withoutTag($tags, string $type = 'slug')
+     * @method static Builder<static>|SettingTranslation withoutTag($tags, string $type = 'slug')
      * @method static \Illuminate\Database\Eloquent\Builder<static>|SettingTranslation withoutTrashed()
      * @mixin \Eloquent
      */
@@ -2038,34 +2048,34 @@ namespace A17\Twill\Models {
      * @property-read int|null $permissions_count
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \A17\Twill\Models\UserOauth> $providers
      * @property-read int|null $providers_count
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User accessible()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User activated()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User draft()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User notSuperAdmin()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User onlyTrashed()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User pending()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User published()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User query()
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCreatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereDeletedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereDescription($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmail($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereId($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLanguage($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLastLoginAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereName($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassword($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePublished($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRegisteredAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRequireNewPassword($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRole($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTitle($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User withTrashed(bool $withTrashed = true)
-     * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutTrashed()
+     * @method static Builder<static>|User accessible()
+     * @method static Builder<static>|User activated()
+     * @method static Builder<static>|User draft()
+     * @method static Builder<static>|User newModelQuery()
+     * @method static Builder<static>|User newQuery()
+     * @method static Builder<static>|User notSuperAdmin()
+     * @method static Builder<static>|User onlyTrashed()
+     * @method static Builder<static>|User pending()
+     * @method static Builder<static>|User published()
+     * @method static Builder<static>|User query()
+     * @method static Builder<static>|User whereCreatedAt($value)
+     * @method static Builder<static>|User whereDeletedAt($value)
+     * @method static Builder<static>|User whereDescription($value)
+     * @method static Builder<static>|User whereEmail($value)
+     * @method static Builder<static>|User whereId($value)
+     * @method static Builder<static>|User whereLanguage($value)
+     * @method static Builder<static>|User whereLastLoginAt($value)
+     * @method static Builder<static>|User whereName($value)
+     * @method static Builder<static>|User wherePassword($value)
+     * @method static Builder<static>|User wherePublished($value)
+     * @method static Builder<static>|User whereRegisteredAt($value)
+     * @method static Builder<static>|User whereRememberToken($value)
+     * @method static Builder<static>|User whereRequireNewPassword($value)
+     * @method static Builder<static>|User whereRole($value)
+     * @method static Builder<static>|User whereTitle($value)
+     * @method static Builder<static>|User whereUpdatedAt($value)
+     * @method static Builder<static>|User withTrashed(bool $withTrashed = true)
+     * @method static Builder<static>|User withoutTrashed()
      * @mixin \Eloquent
      */
     #[\AllowDynamicProperties]

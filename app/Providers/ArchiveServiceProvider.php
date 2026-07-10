@@ -5,6 +5,8 @@ namespace App\Providers;
 use RuntimeException;
 use Illuminate\Support\ServiceProvider;
 use App\Services\Nexus\FakeNexusArchive;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Support\Facades\RateLimiter;
 use App\Services\Nexus\NexusArchiveContract;
 use App\Services\RedisIris\FakeRedisIrisMemory;
 use App\Services\RedisIris\RedisIrisMemoryContract;
@@ -16,6 +18,15 @@ use App\Services\RedisIris\RedisIrisMemoryContract;
  */
 class ArchiveServiceProvider extends ServiceProvider
 {
+    public function boot(): void
+    {
+        // Polite ceiling for NGA IIIF requests, shared by all queued
+        // image-download jobs (see Jobs\Import\DownloadArtworkImage).
+        RateLimiter::for('nga-iiif', function () {
+            return Limit::perMinute(max(1, (int) config('nga.iiif.rate_limit_per_minute')));
+        });
+    }
+
     public function register(): void
     {
         $this->app->singleton(NexusArchiveContract::class, function () {

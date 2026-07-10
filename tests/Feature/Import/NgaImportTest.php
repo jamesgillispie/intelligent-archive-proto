@@ -22,10 +22,13 @@ class NgaImportTest extends TestCase
 
     protected function runImport(?string $path = null, int $limit = 10): void
     {
+        // Image downloads are covered by ArtworkImageDownloadTest; skipping
+        // them here keeps these sync-queue tests off the network.
         $this->artisan('nga:import', [
             '--path' => $path ?? $this->fixturePath(),
             '--limit' => $limit,
             '--sync' => true,
+            '--skip-images' => true,
         ])->assertSuccessful();
     }
 

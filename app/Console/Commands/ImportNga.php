@@ -10,7 +10,8 @@ class ImportNga extends Command
     protected $signature = 'nga:import
         {--limit= : Maximum artworks to import (default: NGA_IMPORT_LIMIT)}
         {--path= : Directory containing the NGA CSV files (default: NGA_OPEN_DATA_PATH)}
-        {--sync : Canonicalize inline instead of dispatching queue jobs}';
+        {--sync : Canonicalize inline instead of dispatching queue jobs}
+        {--skip-images : Do not queue image downloads for imported artworks}';
 
     protected $description = 'Import a curated NGA Open Data subset: source records first, then canonical artworks';
 
@@ -23,6 +24,7 @@ class ImportNga extends Command
                 limit: $limit,
                 path: $this->option('path') ?: null,
                 queueCanonicalization: !$this->option('sync'),
+                downloadImages: !$this->option('skip-images'),
             );
         } catch (\Throwable $exception) {
             // Counts and variable names only — never record contents.

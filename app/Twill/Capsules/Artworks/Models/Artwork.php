@@ -2,9 +2,11 @@
 
 namespace App\Twill\Capsules\Artworks\Models;
 
+use App\Support\Crops;
 use A17\Twill\Models\Model;
 use App\Models\Source\SourceRecord;
 use A17\Twill\Models\Behaviors\HasSlug;
+use A17\Twill\Models\Behaviors\HasMedias;
 use App\Models\Behaviors\HasSourceFields;
 use Illuminate\Database\Eloquent\Builder;
 use A17\Twill\Models\Behaviors\HasRevisions;
@@ -26,11 +28,14 @@ use App\Twill\Capsules\Classifications\Models\Classification;
 class Artwork extends Model
 {
     use HasSlug;
+    use HasMedias;
     use HasRevisions;
     use HasMetadata;
     use HasSourceFields;
     /** @use HasFactory<ArtworkFactory> */
     use HasFactory;
+
+    public const IMAGE_ROLE = 'artwork';
 
     protected $fillable = [
         'published',
@@ -73,6 +78,23 @@ class Artwork extends Model
 
     // Declared so twill-metadata's trait writes a property, not an attribute.
     public array $mediasParams = [];
+
+    /**
+     * Downloaded NGA imagery. The single crop is free-ratio and defaults to
+     * the full frame: paintings are archival records, never cropped for
+     * layout — the frontend letterboxes instead.
+     *
+     * @return array<string, array<string, array<int, array<string, mixed>>>>
+     */
+    public function getMediasParams(): array
+    {
+        return array_merge($this->mediasParams, [
+            self::IMAGE_ROLE => Crops::setCrop([
+                'name' => Crops::CROP_NAMES['free_ratio'],
+                'ratio' => null,
+            ]),
+        ]);
+    }
 
     /** @var array<int, string> display fields with a source_{field} counterpart */
     public array $sourceMappedFields = [

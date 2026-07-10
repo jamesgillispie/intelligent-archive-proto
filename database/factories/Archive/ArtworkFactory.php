@@ -38,18 +38,27 @@ class ArtworkFactory extends Factory
         ];
     }
 
-    public function withPrimaryImage(): self
+    /**
+     * @param array<string, mixed> $attributes
+     */
+    public function withPrimaryImage(array $attributes = []): self
     {
-        return $this->afterCreating(function (Artwork $artwork) {
-            $artwork->images()->create([
-                'nga_uuid' => $this->faker->uuid(),
-                'iiif_url' => 'https://api.nga.gov/iiif/' . $this->faker->uuid(),
-                'iiif_thumb_url' => 'https://api.nga.gov/iiif/' . $this->faker->uuid() . '/full/!200,200/0/default.jpg',
-                'view_type' => 'primary',
-                'is_primary' => true,
-                'width' => 3000,
-                'height' => 2400,
-            ]);
+        return $this->afterCreating(function (Artwork $artwork) use ($attributes) {
+            $artwork->images()->create(
+                array_merge(
+                    [
+                        'nga_uuid' => $this->faker->uuid(),
+                        'iiif_url' => 'https://api.nga.gov/iiif/' . $this->faker->uuid(),
+                        'iiif_thumb_url' =>
+                            'https://api.nga.gov/iiif/' . $this->faker->uuid() . '/full/!200,200/0/default.jpg',
+                        'view_type' => 'primary',
+                        'is_primary' => true,
+                        'width' => 3000,
+                        'height' => 2400,
+                    ],
+                    $attributes,
+                ),
+            );
         });
     }
 }

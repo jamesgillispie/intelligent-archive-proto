@@ -3,6 +3,7 @@
 namespace App\Services\Import;
 
 use App\Models\Source\SourceRecord;
+use App\Jobs\Import\DownloadArtworkImage;
 use App\Twill\Capsules\Artists\Models\Artist;
 use App\Twill\Capsules\Mediums\Models\Medium;
 use App\Twill\Capsules\Artworks\Models\Artwork;
@@ -19,7 +20,7 @@ use App\Twill\Capsules\Classifications\Models\Classification;
  */
 class ArtworkCanonicalizer
 {
-    public function canonicalize(string $ngaObjectId): ?Artwork
+    public function canonicalize(string $ngaObjectId, bool $downloadImages = true): ?Artwork
     {
         $objectRecord = SourceRecord::query()
             ->forTable(SourceRecord::TABLE_OBJECTS)
@@ -64,7 +65,7 @@ class ArtworkCanonicalizer
 
         $artwork->save();
 
-        $imageCount = $this->syncImages($artwork);
+        $imageCount = $this->syncImages($artwork, $downloadImages);
         $this->syncArtists($artwork);
 
         // Displayable requires at least one primary image (rights signal).
@@ -73,7 +74,7 @@ class ArtworkCanonicalizer
         return $artwork;
     }
 
-    protected function syncImages(Artwork $artwork): int
+    protected function syncImages(Artwork $artwork, bool $downloadImages): int
     {
         $imageRecords = SourceRecord::query()
             ->forTable(SourceRecord::TABLE_PUBLISHED_IMAGES)
@@ -87,7 +88,7 @@ class ArtworkCanonicalizer
             $isPrimary = ($payload['viewtype'] ?? '') === 'primary';
             $primaryCount += $isPrimary ? 1 : 0;
 
-            ImageAsset::updateOrCreate(
+            $asset = ImageAsset::updateOrCreate(
                 ['nga_uuid' => $record->source_id],
                 [
                     'artwork_id' => $artwork->id,
@@ -102,9 +103,28 @@ class ArtworkCanonicalizer
                     'position' => $this->intValue($payload, 'sequence') ?? 0,
                 ],
             );
+
+            if ($downloadImages && $asset->is_primary) {
+                $this->dispatchDownload($asset);
+            }
         }
 
         return $primaryCount;
+    }
+
+    /**
+     * Resumable by construction: never-downloaded assets are queued, an
+     * upstream IIIF URL change forces a refresh of the existing download,
+     * and everything else (already downloaded, previously failed) is left
+     * alone — failed images are only retried via `nga:images --retry-failed`.
+     */
+    protected function dispatchDownload(ImageAsset $asset): void
+    {
+        if ($asset->needsDownload()) {
+            DownloadArtworkImage::dispatch($asset->id);
+        } elseif ($asset->isDownloaded() && $asset->wasChanged('iiif_url')) {
+            DownloadArtworkImage::dispatch($asset->id, force: true);
+        }
     }
 
     protected function syncArtists(Artwork $artwork): void

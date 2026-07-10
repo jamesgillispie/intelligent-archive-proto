@@ -22,10 +22,10 @@ class CanonicalizeArtwork implements ShouldQueue
 
     public int $tries = 3;
 
-    public function __construct(public string $ngaObjectId) {}
+    public function __construct(public string $ngaObjectId, public bool $downloadImages = true) {}
 
     public function handle(ArtworkCanonicalizer $canonicalizer): void
     {
-        $canonicalizer->canonicalize($this->ngaObjectId);
+        $canonicalizer->canonicalize($this->ngaObjectId, $this->downloadImages);
     }
 }
