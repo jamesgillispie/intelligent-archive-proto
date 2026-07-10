@@ -1,5 +1,6 @@
 objectid,constituentid,role,roletype,displayorder
 100,900,painter,artist,1
+100,900,artist,artist,1
 100,950,donor,donor,2
 101,901,painter,artist,1
 103,902,sculptor,artist,1

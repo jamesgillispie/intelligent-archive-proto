@@ -109,9 +109,12 @@ class ArtworkCanonicalizer
 
     protected function syncArtists(Artwork $artwork): void
     {
+        // Ordered by source_id so that when a pair carries several role rows
+        // the pivot role resolves deterministically (last key wins).
         $joinRecords = SourceRecord::query()
             ->forTable(SourceRecord::TABLE_OBJECTS_CONSTITUENTS)
             ->where('payload->objectid', $artwork->nga_object_id)
+            ->orderBy('source_id')
             ->get()
             ->filter(fn(SourceRecord $record) => ($record->payload['roletype'] ?? '') === 'artist');
 

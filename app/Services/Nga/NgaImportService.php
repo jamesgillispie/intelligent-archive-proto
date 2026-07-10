@@ -141,10 +141,16 @@ class NgaImportService
 
             $constituentIds[$constituentId] = true;
 
+            // Role is part of the key: NGA ships multiple join rows for the
+            // same (object, constituent) pair that differ only in role text.
+            // Keying by pair alone made those rows fight over one record and
+            // report "updated" on every run.
+            $role = trim($row['role'] ?? '');
+
             $this->mapper->record(
                 $import,
                 SourceRecord::TABLE_OBJECTS_CONSTITUENTS,
-                "{$objectId}:{$constituentId}",
+                "{$objectId}:{$constituentId}:{$role}",
                 $row,
             );
         }

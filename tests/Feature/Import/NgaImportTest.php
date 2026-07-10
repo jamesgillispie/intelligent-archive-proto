@@ -95,6 +95,43 @@ class NgaImportTest extends TestCase
         $this->assertSame(1, (int) SourceRecord::max('version'));
         $this->assertSame($slugs, Artwork::firstOrFail()->slugs()->count());
         $this->assertSame(2, SourceImport::count());
+
+        // The second run reported zero created/updated rows anywhere —
+        // including objects_constituents pairs that carry multiple role rows.
+        /** @var array<string, array<string, int>> $counts */
+        $counts = SourceImport::query()->latest('id')->firstOrFail()->report['source_records'];
+
+        foreach ($counts as $table => $results) {
+            $this->assertSame(
+                ['unchanged'],
+                array_keys($results),
+                "Second run reported non-unchanged rows for {$table}",
+            );
+        }
+    }
+
+    public function testDuplicateJoinRowsWithDifferentRolesAreKeyedSeparately(): void
+    {
+        $this->runImport();
+
+        // The fixture ships two artist-role rows for object 100 + constituent
+        // 900 ("painter" and "artist") — one source record per role.
+        $joinRecords = SourceRecord::forTable(SourceRecord::TABLE_OBJECTS_CONSTITUENTS)
+            ->where('source_id', 'like', '100:900:%')
+            ->orderBy('source_id')
+            ->get();
+
+        $this->assertSame(['100:900:artist', '100:900:painter'], $joinRecords->pluck('source_id')->all());
+        $this->assertSame([1, 1], $joinRecords->pluck('version')->all());
+
+        // The canonical pivot still holds exactly one row per pair, with a
+        // deterministic role (last key wins).
+        $artwork = Artwork::where('nga_object_id', '100')->firstOrFail();
+        $this->assertSame(1, $artwork->artists()->count());
+        $this->assertDatabaseHas('artwork_artist', [
+            'artwork_id' => $artwork->id,
+            'role' => 'painter',
+        ]);
     }
 
     public function testUpstreamChangeBumpsVersionAndPreservesEditorialOverride(): void
