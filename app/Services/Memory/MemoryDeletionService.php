@@ -27,7 +27,7 @@ class MemoryDeletionService
      * What a deletion would remove right now — the confirmation page shows
      * these numbers so consent to delete is as informed as consent to keep.
      *
-     * @return array{trails: int, works: int, saves: int, notes: int, entries: int}
+     * @return array{trails: int, works: int, saves: int, notes: int, suggestions: int, entries: int}
      */
     public function counts(User $user): array
     {
@@ -36,19 +36,25 @@ class MemoryDeletionService
             'works' => TrailItem::whereIn('research_trail_id', $user->trails()->select('id'))->count(),
             'saves' => $user->artworkSaves()->count(),
             'notes' => $user->notes()->count(),
+            'suggestions' => $user->recommendations()->count(),
             'entries' => $user->memoryEvents()->count(),
         ];
     }
 
     /**
-     * @return array{trails: int, works: int, saves: int, notes: int, entries: int}
+     * @return array{trails: int, works: int, saves: int, notes: int, suggestions: int, entries: int}
      */
     public function deleteAll(User $user): array
     {
+        // Captured before the rows go: trail-keyed Iris namespaces have to
+        // be purged even though their trails no longer exist.
+        $trailIds = $user->trails()->pluck('id')->map(fn($id) => (int) $id)->all();
+
         $counts = DB::transaction(function () use ($user) {
             $counts = $this->counts($user);
 
             $user->notes()->delete();
+            $user->recommendations()->delete();
             $user->trails()->delete(); // items cascade at the database level
             $user->artworkSaves()->delete();
             $user->memoryEvents()->delete();
@@ -60,14 +66,19 @@ class MemoryDeletionService
             return $counts;
         });
 
-        $prefix = $this->visitors->userPrefix($user);
+        $prefixes = [
+            $this->visitors->userPrefix($user),
+            ...array_map(fn(int $trailId) => $this->visitors->trailPrefix($trailId), $trailIds),
+        ];
 
-        $this->iris->purge($prefix);
+        foreach ($prefixes as $prefix) {
+            $this->iris->purge($prefix);
 
-        if ($this->iris->inspect($prefix) !== []) {
-            throw new RuntimeException(
-                "Iris purge verification failed for prefix [{$prefix}]: held context remains after purge.",
-            );
+            if ($this->iris->inspect($prefix) !== []) {
+                throw new RuntimeException(
+                    "Iris purge verification failed for prefix [{$prefix}]: held context remains after purge.",
+                );
+            }
         }
 
         return $counts;

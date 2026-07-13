@@ -130,6 +130,12 @@ class ConsentService
         });
 
         $this->iris->purge($this->visitors->userPrefix($user));
+
+        // Trail summaries are the owner's derived context too, just keyed
+        // by trail; while paused there is no basis for holding them either.
+        foreach ($user->trails()->pluck('id') as $trailId) {
+            $this->iris->purge($this->visitors->trailPrefix((int) $trailId));
+        }
     }
 
     public function resume(User $user): void

@@ -18,6 +18,8 @@ class TrailMemoryService
 {
     public const ACTIVE_TRAIL = 'active_trail';
 
+    public const SEMANTIC_SUMMARY = 'semantic_summary';
+
     public function __construct(
         private readonly RedisIrisMemoryContract $iris,
         private readonly VisitorContextService $visitors,
@@ -94,6 +96,84 @@ class TrailMemoryService
         }
 
         return $trail;
+    }
+
+    /**
+     * The compact, human-readable profile expansion queries run from —
+     * derived entirely from the trail's works and their canonical
+     * metadata. Content-hash keyed (STRATEGY §7): the held copy is only
+     * trusted while the trail's items are unchanged; anything else
+     * rebuilds. Written to Iris only while memory may be written;
+     * otherwise computed fresh and held nowhere.
+     *
+     * @return array<string, mixed>
+     */
+    public function semanticSummary(ResearchTrail $trail): array
+    {
+        $artworkIds = $trail->items()->orderBy('position')->pluck('artwork_id')->map(fn($id) => (int) $id)->all();
+
+        $hash = sha1(implode(',', $artworkIds));
+        $namespace = $this->visitors->trailNamespace($trail->id, self::SEMANTIC_SUMMARY);
+        $mayRemember = $this->consent->canRemember($trail->user);
+
+        if ($mayRemember) {
+            $held = $this->iris->get($namespace);
+
+            if ($held !== null && ($held['content_hash'] ?? null) === $hash) {
+                return $held;
+            }
+        }
+
+        $summary = $this->buildSummary($trail, $artworkIds, $hash);
+
+        if ($mayRemember) {
+            $this->iris->put($namespace, $summary);
+        }
+
+        return $summary;
+    }
+
+    /**
+     * Drop everything held for a trail that stopped being a working
+     * surface (deleted or archived).
+     */
+    public function forgetTrailContext(int $trailId): void
+    {
+        $this->iris->purge($this->visitors->trailPrefix($trailId));
+    }
+
+    /**
+     * @param  list<int>  $artworkIds
+     * @return array<string, mixed>
+     */
+    protected function buildSummary(ResearchTrail $trail, array $artworkIds, string $hash): array
+    {
+        /** @var \Illuminate\Support\Collection<int, \App\Twill\Capsules\Artworks\Models\Artwork> $artworks */
+        $artworks = $trail
+            ->items()
+            ->with(['artwork.artists', 'artwork.classification', 'artwork.medium'])
+            ->get()
+            ->pluck('artwork')
+            ->filter()
+            ->values();
+
+        $years = $artworks->pluck('source_begin_year')->filter()->map(fn($year) => (int) $year);
+
+        $names = fn($values) => $values->filter()->unique()->values()->all();
+
+        // Anchors are stored by name, not id — the dashboard shows this
+        // payload verbatim, so it has to read as what it is.
+        return [
+            'content_hash' => $hash,
+            'trail_title' => $trail->title,
+            'artwork_ids' => $artworkIds,
+            'anchors' => [
+                'artists' => $names($artworks->flatMap(fn($artwork) => $artwork->artists->pluck('name'))),
+                'classifications' => $names($artworks->map(fn($artwork) => $artwork->classification?->name)),
+                'mediums' => $names($artworks->map(fn($artwork) => $artwork->medium?->name ?? $artwork->medium_text)),
+                'period' => $years->isEmpty() ? null : $years->min() . '–' . $years->max(),
+            ],
+        ];
     }
 
     protected function namespace(User $user): string

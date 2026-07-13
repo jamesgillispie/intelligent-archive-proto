@@ -148,8 +148,48 @@ class ExploreTest extends TestCase
             ->assertOk();
 
         // No session context (it would link a session to an account) and
-        // no user context (that surface is Phase 7, consent-gated).
+        // no user context — queries are not an enumerated explicit action
+        // and are never stored durably.
         $this->assertSame([], $this->iris()->inspect('session:'));
         $this->assertSame([], $this->iris()->inspect("user:{$user->id}:"));
+    }
+
+    public function testConsentedVisitorsGetTrailDrawnSeedsWithoutAnyWrites(): void
+    {
+        $this->seedCollection();
+
+        $user = User::factory()->create();
+        app(ConsentService::class)->grant($user);
+
+        $artist = \App\Twill\Capsules\Artists\Models\Artist::factory()->create([
+            'name' => 'Thomas Cole',
+            'source_name' => 'Thomas Cole',
+        ]);
+        $saved = Artwork::factory()->withPrimaryImage()->create();
+        $saved->artists()->attach($artist->id, ['role' => 'artist']);
+
+        $trail = \App\Models\Memory\ResearchTrail::factory()->create(['user_id' => $user->id]);
+        \App\Models\Memory\TrailItem::factory()->create([
+            'research_trail_id' => $trail->id,
+            'artwork_id' => $saved->id,
+            'position' => 1,
+        ]);
+
+        $this->actingAs($user)
+            ->get(route('archive.explore'))
+            ->assertOk()
+            ->assertSee('From your trails')
+            ->assertSee('Thomas Cole');
+
+        // Seeds are read from the user's own record; nothing is written.
+        $this->assertSame([], $this->iris()->inspect("user:{$user->id}:"));
+        $this->assertSame([], $this->iris()->inspect('session:'));
+    }
+
+    public function testGuestsSeeNoTrailSeeds(): void
+    {
+        $this->seedCollection();
+
+        $this->get(route('archive.explore'))->assertOk()->assertDontSee('From your trails');
     }
 }

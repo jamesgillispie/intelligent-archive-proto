@@ -9,6 +9,7 @@ use App\Models\Memory\ArtworkSave;
 use App\Models\Memory\MemoryEvent;
 use App\Models\Memory\MemoryConsent;
 use App\Models\Memory\ResearchTrail;
+use App\Models\Memory\Recommendation;
 use App\Services\RedisIris\RedisIrisMemoryContract;
 
 /**
@@ -71,6 +72,27 @@ class MemoryExportService
                     ],
                 )
                 ->all(),
+            // Every suggestion ever shown, verbatim — reason, evidence,
+            // context, and what the user did with it.
+            'suggestions' => $user
+                ->recommendations()
+                ->with(['artwork', 'trail'])
+                ->orderBy('id')
+                ->get()
+                ->map(
+                    fn(Recommendation $recommendation) => [
+                        'artwork_title' => $recommendation->artwork?->title,
+                        'trail_title' => $recommendation->trail?->title,
+                        'kind' => $recommendation->kind,
+                        'reason' => $recommendation->reason,
+                        'status' => $recommendation->status,
+                        'citations' => $recommendation->citations,
+                        'context' => $recommendation->context,
+                        'shown_at' => $recommendation->created_at->toIso8601String(),
+                        'responded_at' => $recommendation->responded_at?->toIso8601String(),
+                    ],
+                )
+                ->all(),
             'other_notes' => $user
                 ->notes()
                 ->where('notable_type', '!=', (new ResearchTrail())->getMorphClass())
@@ -93,8 +115,16 @@ class MemoryExportService
                 )
                 ->all(),
             // What Redis Iris holds right now, verbatim — derived context
-            // that would rebuild from the tables above.
-            'held_context' => $this->iris->inspect($this->visitors->userPrefix($user)),
+            // that would rebuild from the tables above. Trail summaries are
+            // keyed by trail, so each trail's prefix is inspected too.
+            'held_context' => array_merge(
+                $this->iris->inspect($this->visitors->userPrefix($user)),
+                ...$user
+                    ->trails()
+                    ->pluck('id')
+                    ->map(fn($id) => $this->iris->inspect($this->visitors->trailPrefix((int) $id)))
+                    ->all(),
+            ),
         ];
     }
 

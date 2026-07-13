@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\View\View;
 use Illuminate\Http\Request;
 use Illuminate\View\Factory;
+use App\Models\Memory\TrailItem;
+use App\Services\Memory\ConsentService;
 use App\Services\Memory\VisitorContextService;
 use App\Services\Nexus\Artifacts\ExploreResult;
 use App\Twill\Capsules\Artworks\Models\Artwork;
@@ -24,6 +26,7 @@ class ExploreController extends Controller
         protected NexusRetriever $retriever,
         protected RedisIrisMemoryContract $iris,
         protected VisitorContextService $visitors,
+        protected ConsentService $consent,
     ) {}
 
     public function __invoke(Request $request): Factory|View
@@ -38,7 +41,60 @@ class ExploreController extends Controller
             'result' => $result,
             'matches' => $result === null ? [] : $this->hydrate($result),
             'earlierQueries' => $this->rememberSessionQuery($request, $query),
+            'trailSeeds' => $this->trailSeeds($request, $query),
         ]);
+    }
+
+    /**
+     * Signed-in, currently consented visitors get starting points drawn
+     * from their own trails — artist, medium and classification names from
+     * works they explicitly saved. Only the seeds are personal: results
+     * for any query stay identical for every visitor, and nothing here
+     * writes context anywhere. Free-text queries are not an enumerated
+     * explicit action, so they are never stored durably.
+     *
+     * @return list<string>
+     */
+    protected function trailSeeds(Request $request, string $query): array
+    {
+        $user = $request->user();
+
+        // Consent gates the reading of trails for seeds; pause does not —
+        // pause stops writes, never reads of the user's own record.
+        if ($user === null || !$this->consent->hasCurrentConsent($user)) {
+            return [];
+        }
+
+        $artworkIds = TrailItem::whereIn('research_trail_id', $user->trails()->active()->select('id'))
+            ->pluck('artwork_id')
+            ->unique();
+
+        if ($artworkIds->isEmpty()) {
+            return [];
+        }
+
+        $artworks = Artwork::displayable()
+            ->with(['artists', 'classification', 'medium'])
+            ->findMany($artworkIds);
+
+        return $artworks
+            ->flatMap(
+                fn(Artwork $artwork) => [
+                    ...$artwork->artists->pluck('name')->all(),
+                    $artwork->classification?->name,
+                    $artwork->medium?->name,
+                ],
+            )
+            ->filter()
+            ->map(fn($seed) => (string) $seed)
+            ->countBy()
+            ->sortKeys()
+            ->sortDesc()
+            ->keys()
+            ->reject(fn(string $seed) => mb_strtolower($seed) === mb_strtolower($query))
+            ->take(6)
+            ->values()
+            ->all();
     }
 
     /**

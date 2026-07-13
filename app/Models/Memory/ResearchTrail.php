@@ -46,6 +46,11 @@ class ResearchTrail extends Model
         return $this->morphMany(UserNote::class, 'notable')->latest();
     }
 
+    public function recommendations(): HasMany
+    {
+        return $this->hasMany(Recommendation::class);
+    }
+
     public function isArchived(): bool
     {
         return $this->status === self::STATUS_ARCHIVED;

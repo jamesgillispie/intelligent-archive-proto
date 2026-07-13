@@ -22,6 +22,11 @@ return [
     // this must never accumulate into a profile.
     'anonymous_context_ttl_minutes' => (int) env('MEMORY_ANON_CONTEXT_TTL_MINUTES', 60),
 
+    // How long the recommendation context (works whose suggestion the user
+    // dismissed) stays warm in Iris, in minutes. Short by design: it is
+    // fully derived from SQL and rebuilt on demand.
+    'recommendation_context_ttl_minutes' => (int) env('MEMORY_RECOMMENDATION_CONTEXT_TTL_MINUTES', 240),
+
     // Default export format for the memory export endpoint (Phase 5).
     'export_format' => env('MEMORY_EXPORT_FORMAT', 'json'),
 ];

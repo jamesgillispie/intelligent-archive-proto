@@ -7,6 +7,7 @@ use App\Http\Controllers\AboutController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\ArtistsController;
+use App\Http\Controllers\CompareController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ExploreController;
 use App\Http\Controllers\SitemapController;
@@ -22,8 +23,10 @@ use App\Http\Controllers\Account\TrailsController;
 use App\Http\Controllers\Account\ConsentController;
 use App\Http\Controllers\Account\TrailItemsController;
 use App\Http\Controllers\Account\MemoryPauseController;
+use App\Http\Controllers\Account\SuggestionsController;
 use App\Http\Controllers\Account\MemoryEventsController;
 use App\Http\Controllers\Account\MemoryDeletionController;
+use App\Http\Controllers\Account\TrailExpansionController;
 use App\Http\Controllers\Account\MemoryActivatedController;
 
 App::booted(function () {
@@ -82,6 +85,13 @@ App::booted(function () {
                     'trails.reactivate',
                 );
                 Route::post('/trails/{trail}/notes', [NotesController::class, 'store'])->name('trails.notes.store');
+                Route::post('/trails/{trail}/expand', TrailExpansionController::class)->name('trails.expand');
+                Route::post('/suggestions/{recommendation}/accept', [SuggestionsController::class, 'accept'])->name(
+                    'suggestions.accept',
+                );
+                Route::post('/suggestions/{recommendation}/dismiss', [SuggestionsController::class, 'dismiss'])->name(
+                    'suggestions.dismiss',
+                );
                 Route::get('/save/{slug}', SaveController::class)->name('save');
                 Route::post('/saves', [SavesController::class, 'store'])->name('saves.store');
             });
@@ -94,6 +104,13 @@ App::booted(function () {
     Route::middleware(['private', 'throttle:archive-explore'])
         ->get('/archive/explore', ExploreController::class)
         ->name('archive.explore');
+
+    // Compare is consent-gated (flow D): it runs over the user's own
+    // saved and trailed works, and requesting it is an explicit,
+    // ledgered act — so it stays out of the cache group too.
+    Route::middleware(['private', 'auth', 'consented'])
+        ->get('/archive/compare', CompareController::class)
+        ->name('archive.compare');
 
     Route::middleware(['cache:public;max_age=60;s_maxage=3600'])->group(function () {
         Route::get('/', HomepageController::class)->name('home');
