@@ -58,6 +58,10 @@ class ResearchTrail extends Model
 
     public function containsArtwork(Artwork $artwork): bool
     {
+        if ($this->relationLoaded('items')) {
+            return $this->items->contains('artwork_id', $artwork->id);
+        }
+
         return $this->items()->where('artwork_id', $artwork->id)->exists();
     }
 

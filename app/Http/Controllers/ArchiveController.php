@@ -17,7 +17,7 @@ class ArchiveController extends Controller
     public function __invoke(): Factory|View
     {
         $recent = Artwork::displayable()
-            ->with(['primaryImage', 'medias'])
+            ->with(['primaryImage', 'medias', 'slugs'])
             ->orderByDesc('last_synced_at')
             ->orderBy('id')
             ->take(8)
@@ -43,7 +43,7 @@ class ArchiveController extends Controller
         return CuratedSet::publishedInListings()
             ->orderBy('position')
             ->with([
-                'artworks' => fn($query) => $query->displayable()->with(['primaryImage', 'medias']),
+                'artworks' => fn($query) => $query->displayable()->with(['primaryImage', 'medias', 'slugs']),
             ])
             ->get()
             ->filter(fn(CuratedSet $set) => $set->artworks->isNotEmpty())

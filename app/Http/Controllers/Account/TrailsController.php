@@ -64,7 +64,13 @@ class TrailsController extends Controller
         $trail = $request
             ->user()
             ->trails()
-            ->with(['items.artwork.primaryImage', 'items.artwork.medias', 'items.artwork.artists', 'notes'])
+            ->with([
+                'items.artwork.primaryImage',
+                'items.artwork.medias',
+                'items.artwork.artists',
+                'items.artwork.slugs',
+                'notes',
+            ])
             ->findOrFail($trail);
 
         $this->trails->recordRevisit($trail);
@@ -76,7 +82,7 @@ class TrailsController extends Controller
         $open = $trail->recommendations()->open()->orderBy('id')->get();
 
         $suggested = Artwork::displayable()
-            ->with(['primaryImage', 'medias'])
+            ->with(['primaryImage', 'medias', 'slugs'])
             ->findMany($open->pluck('artwork_id'))
             ->keyBy('id');
 

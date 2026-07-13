@@ -34,7 +34,7 @@ class ArtistsController extends Controller
         $artist = Artist::publishedInListings()->forSlug($slug)->firstOrFail();
 
         $artworks = Artwork::displayable()
-            ->with(['primaryImage', 'medias'])
+            ->with(['primaryImage', 'medias', 'slugs'])
             ->whereHas('artists', fn($q) => $q->where('artists.id', $artist->id))
             ->orderByRaw('source_begin_year nulls last')
             ->paginate(24);
