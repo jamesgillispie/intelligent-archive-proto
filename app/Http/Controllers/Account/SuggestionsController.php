@@ -23,7 +23,7 @@ class SuggestionsController extends Controller
 
         return redirect()
             ->route('account.trails.show', $recommendation->research_trail_id)
-            ->with('status', "Added “{$recommendation->artwork->title}” to “{$recommendation->trail->title}”.");
+            ->with('status', "Saved “{$recommendation->artwork->title}” to “{$recommendation->trail->title}”.");
     }
 
     public function dismiss(Request $request, int $recommendation): RedirectResponse

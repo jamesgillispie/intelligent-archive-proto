@@ -50,6 +50,14 @@ class TwillServiceProvider extends ServiceProvider
                 ]),
         );
 
+        TwillNavigation::addLink(
+            NavigationLink::make()
+                ->forModule('curatedSets')
+                ->title('Curation')
+                ->doNotAddSelfAsFirstChild()
+                ->setChildren([NavigationLink::make()->forModule('curatedSets')->title('Curated sets')]),
+        );
+
         TwillNavigation::addLink(NavigationLink::make()->forSingleton('aboutLanding')->title('About'));
 
         TwillNavigation::addLink(NavigationLink::make()->forSingleton('contactLanding')->title('Contact'));

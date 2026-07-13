@@ -48,7 +48,7 @@ class CompareController extends Controller
         }
 
         $found = Artwork::displayable()
-            ->with(['artists', 'classification', 'department', 'medium', 'primaryImage', 'medias'])
+            ->with(['artists', 'classification', 'department', 'medium', 'primaryImage', 'medias', 'slugs'])
             ->findMany($requested)
             ->keyBy('id');
 
@@ -63,7 +63,11 @@ class CompareController extends Controller
 
         $this->recordRequest($user, $artworks);
 
-        $trail = isset($validated['trail']) ? $user->trails()->active()->find((int) $validated['trail']) : null;
+        // Items come along so the per-work "Save to trail" affordance can
+        // check membership without a query per compared work.
+        $trail = isset($validated['trail'])
+            ? $user->trails()->active()->with('items')->find((int) $validated['trail'])
+            : null;
 
         return view('site.archive.compare', [
             'artworks' => $artworks,

@@ -6,9 +6,10 @@
             <h1 class="f-heading-01">Your memory, portable</h1>
             <p class="f-body mt-16 max-w-[640px] opacity-80">
                 The complete record: your agreements, trails, saves, notes,
-                the ledger, and a snapshot of the short-lived context
-                currently held. What you can read below is exactly what the
-                file contains — nothing more leaves with it.
+                the ledger, every suggestion shown to you with its reasons and
+                evidence, and a snapshot of the short-lived context currently
+                held. What you can read below is exactly what the file
+                contains — nothing more leaves with it.
             </p>
         </header>
 

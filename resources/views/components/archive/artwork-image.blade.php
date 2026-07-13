@@ -5,6 +5,13 @@
     'eager' => false,
     'imgClass' => 'h-full w-full object-contain',
     'placeholder' => '',
+    // True when the work's title is already visible right next to the image
+    // (cards, list rows) — alt text would make screen readers announce every
+    // title twice.
+    'decorative' => false,
+    // Explicit override; used when the derived alt (assistive text) is
+    // already shown visibly as a figcaption beside the image.
+    'alt' => null,
 ])
 
 @php
@@ -18,6 +25,7 @@
 
     $src = null;
     $srcset = null;
+    $override = $alt;
     $alt = '';
 
     if ($hasLocal) {
@@ -25,11 +33,15 @@
         $srcset = collect($widths)
             ->map(fn(int $width) => $artwork->image($role, 'default', ['w' => $width]) . " {$width}w")
             ->join(', ');
-        $alt = $artwork->imageAltText($role) ?: $artwork->title;
+        $alt = $decorative ? '' : ($artwork->imageAltText($role) ?: $artwork->title);
     } elseif ($hasRemote) {
         $src = $remote->sizedUrl($widths[0]);
         $srcset = collect($widths)->map(fn(int $width) => $remote->sizedUrl($width) . " {$width}w")->join(', ');
-        $alt = $remote->altText($artwork->title);
+        $alt = $decorative ? '' : $remote->altText($artwork->title);
+    }
+
+    if ($override !== null && !$decorative) {
+        $alt = $override;
     }
 @endphp
 

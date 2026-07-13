@@ -107,7 +107,7 @@ class ExploreController extends Controller
         }
 
         $artworks = Artwork::displayable()
-            ->with(['primaryImage', 'medias'])
+            ->with(['primaryImage', 'medias', 'slugs'])
             ->findMany($result->artworkIds())
             ->keyBy('id');
 

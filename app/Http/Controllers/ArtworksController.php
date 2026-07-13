@@ -27,7 +27,7 @@ class ArtworksController extends Controller
         ]);
 
         $artworks = Artwork::displayable()
-            ->with(['primaryImage', 'artists', 'medias'])
+            ->with(['primaryImage', 'artists', 'medias', 'slugs'])
             ->when(
                 $filters['artist'] ?? null,
                 fn($query, $artist) => $query->whereHas('artists', fn($q) => $q->where('artists.id', $artist)),
@@ -116,7 +116,7 @@ class ArtworksController extends Controller
         }
 
         $artworks = Artwork::displayable()
-            ->with(['primaryImage', 'medias'])
+            ->with(['primaryImage', 'medias', 'slugs'])
             ->findMany($set->artworkIds())
             ->keyBy('id');
 

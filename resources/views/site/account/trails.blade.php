@@ -31,6 +31,13 @@
             </section>
         @endif
 
+        @if ($paused && $activeTrails->isEmpty() && $archivedTrails->isEmpty())
+            <p class="f-body max-w-[640px] pb-32">
+                No trails yet. Memory is paused, so nothing new can be kept —
+                resume it whenever you are ready to start one.
+            </p>
+        @endif
+
         @if ($activeTrails->isNotEmpty())
             <section class="pb-32">
                 <h2 class="f-ui-01 mb-16 uppercase tracking-wide opacity-60">Active trails</h2>

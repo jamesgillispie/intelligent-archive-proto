@@ -60,6 +60,10 @@ return [
                 'name' => 'Mediums',
                 'enabled' => true,
             ],
+            [
+                'name' => 'CuratedSets',
+                'enabled' => true,
+            ],
         ],
     ],
     'dashboard' => [

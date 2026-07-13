@@ -13,7 +13,7 @@ class LoginTest extends TestCase
 
     public function testLoginScreenRenders(): void
     {
-        $this->get(route('login'))->assertOk()->assertSee('Sign in')->assertSee('turns your memory back on');
+        $this->get(route('login'))->assertOk()->assertSee('Sign in')->assertSee('where you left them');
     }
 
     public function testUsersLandOnTrailsAfterLogin(): void
