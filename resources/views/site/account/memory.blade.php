@@ -53,6 +53,29 @@
             @endif
         </section>
 
+        <section class="border-dark-soft mb-32 border p-20">
+            <h2 class="f-ui-01 uppercase tracking-wide opacity-60">Held context</h2>
+            <p class="f-body mt-8 max-w-[640px] opacity-80">
+                Short-lived working memory derived from your actions —
+                currently just the pointer behind “continue where you left
+                off”. It rebuilds from the record below, expires on its own,
+                and deleting your memory purges it instantly.
+            </p>
+            @forelse ($heldContext as $namespace => $context)
+                <div class="border-dark-soft mt-16 border-t pt-12">
+                    <h3 class="f-ui-01 opacity-60">{{ $namespace }}</h3>
+                    <dl class="f-ui-01 mt-8 grid grid-cols-[auto_1fr] gap-x-24 gap-y-4">
+                        @foreach ($context as $key => $value)
+                            <dt class="opacity-60">{{ str_replace('_', ' ', $key) }}</dt>
+                            <dd>{{ is_scalar($value) ? $value : json_encode($value) }}</dd>
+                        @endforeach
+                    </dl>
+                </div>
+            @empty
+                <p class="f-body mt-8 opacity-60">Nothing is currently held.</p>
+            @endforelse
+        </section>
+
         <section class="mb-32">
             <h2 class="f-ui-01 mb-16 uppercase tracking-wide opacity-60">Saved for later</h2>
             @forelse ($saves as $save)
@@ -86,8 +109,7 @@
             <h2 class="f-ui-01 mb-8 uppercase tracking-wide opacity-60">The ledger</h2>
             <p class="f-body mb-16 max-w-[640px] opacity-80">
                 A plain record of every explicit action — the only inputs any
-                future suggestion will ever draw on. Export and whole-memory
-                deletion arrive with the next phase.
+                future suggestion will ever draw on.
             </p>
 
             @if ($events->isEmpty())
@@ -113,6 +135,24 @@
                     {{ $events->onEachSide(1)->links() }}
                 </div>
             @endif
+        </section>
+
+        <section class="border-dark-soft mt-32 border p-20">
+            <h2 class="f-ui-01 uppercase tracking-wide opacity-60">Yours to take, yours to end</h2>
+            <ul class="f-body mt-8 flex flex-col gap-8">
+                <li>
+                    <a class="underline" href="{{ route('account.export') }}">Export your memory</a>
+                    <span class="opacity-60">— everything on this page as a portable file.</span>
+                </li>
+                <li>
+                    <a class="underline" href="{{ route('account.memory.delete') }}">Delete everything</a>
+                    <span class="opacity-60">— remove all of it in one step; the agreement stays in place.</span>
+                </li>
+                <li>
+                    <a class="underline" href="{{ route('account.consent.revoke') }}">Revoke the agreement</a>
+                    <span class="opacity-60">— delete everything and turn memory off entirely.</span>
+                </li>
+            </ul>
         </section>
 
         <nav class="f-ui-01 border-dark-soft mt-32 flex items-center gap-24 border-t pt-24">

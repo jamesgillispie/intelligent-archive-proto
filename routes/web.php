@@ -15,12 +15,14 @@ use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\Account\SaveController;
 use App\Http\Controllers\Account\NotesController;
 use App\Http\Controllers\Account\SavesController;
+use App\Http\Controllers\Account\ExportController;
 use App\Http\Controllers\Account\MemoryController;
 use App\Http\Controllers\Account\TrailsController;
 use App\Http\Controllers\Account\ConsentController;
 use App\Http\Controllers\Account\TrailItemsController;
 use App\Http\Controllers\Account\MemoryPauseController;
 use App\Http\Controllers\Account\MemoryEventsController;
+use App\Http\Controllers\Account\MemoryDeletionController;
 use App\Http\Controllers\Account\MemoryActivatedController;
 
 App::booted(function () {
@@ -43,12 +45,18 @@ App::booted(function () {
             Route::get('/memory-activated', MemoryActivatedController::class)->name('memory-activated');
             Route::get('/consent', [ConsentController::class, 'show'])->name('consent');
             Route::post('/consent', [ConsentController::class, 'store'])->name('consent.renew');
+            Route::get('/consent/revoke', [ConsentController::class, 'confirmRevoke'])->name('consent.revoke');
+            Route::delete('/consent', [ConsentController::class, 'destroy'])->name('consent.destroy');
 
             // Inspection, deletion and the memory switches stay reachable
             // with stale consent or paused memory — the user can always
             // inspect and delete (charter #8). Ownership is enforced by
             // resolving everything through the authenticated user.
             Route::get('/memory', MemoryController::class)->name('memory');
+            Route::get('/memory/delete', [MemoryDeletionController::class, 'confirm'])->name('memory.delete');
+            Route::delete('/memory', [MemoryDeletionController::class, 'destroy'])->name('memory.destroy');
+            Route::get('/export', [ExportController::class, 'show'])->name('export');
+            Route::get('/export/download', [ExportController::class, 'download'])->name('export.download');
             Route::post('/memory/pause', [MemoryPauseController::class, 'pause'])->name('memory.pause');
             Route::post('/memory/resume', [MemoryPauseController::class, 'resume'])->name('memory.resume');
             Route::delete('/memory/events/{event}', [MemoryEventsController::class, 'destroy'])->name(
