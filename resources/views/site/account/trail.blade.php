@@ -70,11 +70,29 @@
                                     @method('DELETE')
                                     <button class="underline" type="submit">Remove</button>
                                 </form>
+                                @if ($trail->items->count() >= 2)
+                                    <label class="flex cursor-pointer items-center gap-6">
+                                        <input name="works[]" form="compare-form" type="checkbox"
+                                            value="{{ $item->artwork->id }}" />
+                                        Compare
+                                    </label>
+                                @endif
                             </div>
                         </div>
                     </li>
                 @endforeach
             </ol>
+
+            @if ($trail->items->count() >= 2)
+                <form class="f-ui-01 mt-16" id="compare-form" method="GET" action="{{ route('archive.compare') }}">
+                    <input name="trail" type="hidden" value="{{ $trail->id }}" />
+                    <button class="underline" type="submit">Compare selected works</button>
+                    <span class="opacity-60">— tick two or more works above.</span>
+                </form>
+                @error('works')
+                    <p class="f-ui-01 mt-8 text-[#9b3324]" role="alert">{{ $message }}</p>
+                @enderror
+            @endif
         @endif
 
         @if ($canExpand || $continuationSuggestions->isNotEmpty() || $counterpointSuggestions->isNotEmpty())

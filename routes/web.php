@@ -7,6 +7,7 @@ use App\Http\Controllers\AboutController;
 use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\ArtistsController;
+use App\Http\Controllers\CompareController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ExploreController;
 use App\Http\Controllers\SitemapController;
@@ -103,6 +104,13 @@ App::booted(function () {
     Route::middleware(['private', 'throttle:archive-explore'])
         ->get('/archive/explore', ExploreController::class)
         ->name('archive.explore');
+
+    // Compare is consent-gated (flow D): it runs over the user's own
+    // saved and trailed works, and requesting it is an explicit,
+    // ledgered act — so it stays out of the cache group too.
+    Route::middleware(['private', 'auth', 'consented'])
+        ->get('/archive/compare', CompareController::class)
+        ->name('archive.compare');
 
     Route::middleware(['cache:public;max_age=60;s_maxage=3600'])->group(function () {
         Route::get('/', HomepageController::class)->name('home');
