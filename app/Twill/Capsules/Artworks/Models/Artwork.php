@@ -7,6 +7,7 @@ use A17\Twill\Models\Model;
 use App\Models\Source\SourceRecord;
 use A17\Twill\Models\Behaviors\HasSlug;
 use A17\Twill\Models\Behaviors\HasMedias;
+use App\Models\Archive\ArtworkEnrichment;
 use App\Models\Behaviors\HasSourceFields;
 use Illuminate\Database\Eloquent\Builder;
 use A17\Twill\Models\Behaviors\HasRevisions;
@@ -162,5 +163,14 @@ class Artwork extends Model
     public function sourceRecord(): BelongsTo
     {
         return $this->belongsTo(SourceRecord::class);
+    }
+
+    /**
+     * AI-generated field values awaiting review. Display fields and the
+     * Nexus index only ever see rows with status=approved.
+     */
+    public function enrichments(): HasMany
+    {
+        return $this->hasMany(ArtworkEnrichment::class);
     }
 }

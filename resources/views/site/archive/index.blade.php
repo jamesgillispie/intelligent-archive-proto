@@ -16,6 +16,9 @@
                 <a class="underline" href="{{ route('archive.artists.index') }}">
                     Artists ({{ number_format($artistCount) }})
                 </a>
+                <a class="underline" href="{{ route('archive.explore') }}">
+                    Explore by idea
+                </a>
             </nav>
         </header>
 

@@ -8,6 +8,7 @@ use App\Http\Controllers\PagesController;
 use App\Http\Controllers\ArchiveController;
 use App\Http\Controllers\ArtistsController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ExploreController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ArticlesController;
 use App\Http\Controllers\ArtworksController;
@@ -85,6 +86,14 @@ App::booted(function () {
                 Route::post('/saves', [SavesController::class, 'store'])->name('saves.store');
             });
         });
+
+    // Explore is sessioned — rate limiting is per session, and anonymous
+    // visitors get a session-scoped "earlier this session" line — so it
+    // stays out of the response-cache group. Anonymous access is the
+    // point: this is the limited, non-personalized tier.
+    Route::middleware(['private', 'throttle:archive-explore'])
+        ->get('/archive/explore', ExploreController::class)
+        ->name('archive.explore');
 
     Route::middleware(['cache:public;max_age=60;s_maxage=3600'])->group(function () {
         Route::get('/', HomepageController::class)->name('home');

@@ -3,12 +3,15 @@
 namespace Tests\Feature\Services;
 
 use Tests\TestCase;
-use App\Services\Nexus\ArchiveMatch;
-use App\Services\Nexus\FakeNexusArchive;
-use App\Services\Nexus\NexusArchiveContract;
+use App\Services\Nexus\Fake\FakeNexus;
+use App\Services\Nexus\Artifacts\Citation;
 use App\Twill\Capsules\Artists\Models\Artist;
+use App\Services\Nexus\Contracts\NexusIndexer;
 use App\Services\RedisIris\FakeRedisIrisMemory;
 use App\Twill\Capsules\Artworks\Models\Artwork;
+use App\Services\Nexus\Artifacts\CitationBundle;
+use App\Services\Nexus\Artifacts\RelatedArtwork;
+use App\Services\Nexus\Contracts\NexusRetriever;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Services\RedisIris\RedisIrisMemoryContract;
 
@@ -16,25 +19,29 @@ class VendorBoundariesTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function testFakeBindingsResolveAsSingletons(): void
+    public function testFakeBindingsResolveAsOneSingletonAcrossBothNexusContracts(): void
     {
-        $nexus = app(NexusArchiveContract::class);
+        $indexer = app(NexusIndexer::class);
+        $retriever = app(NexusRetriever::class);
         $iris = app(RedisIrisMemoryContract::class);
 
-        $this->assertInstanceOf(FakeNexusArchive::class, $nexus);
+        $this->assertInstanceOf(FakeNexus::class, $indexer);
+        $this->assertInstanceOf(FakeNexus::class, $retriever);
+        // One instance serves both sides, so sync-queue tests can index
+        // through NexusIndexer and assert through the same fake.
+        $this->assertSame($indexer, $retriever);
         $this->assertInstanceOf(FakeRedisIrisMemory::class, $iris);
-        $this->assertSame($nexus, app(NexusArchiveContract::class));
     }
 
     public function testLiveDriversFailLoudlyUntilImplemented(): void
     {
         config(['nexus.driver' => 'live']);
-        $this->app->forgetInstance(NexusArchiveContract::class);
+        $this->app->forgetInstance(NexusRetriever::class);
 
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('not implemented');
 
-        app(NexusArchiveContract::class);
+        app(NexusRetriever::class);
     }
 
     public function testIrisFakeHonorsTheInspectAndPurgeLifecycle(): void
@@ -90,29 +97,38 @@ class VendorBoundariesTest extends TestCase
         $related->update(['classification_id' => null, 'medium_id' => null, 'department_id' => null]);
         $unrelated->update(['classification_id' => null, 'medium_id' => null, 'department_id' => null]);
 
-        $matches = app(NexusArchiveContract::class)->relatedTo($subject->fresh('artists'));
+        $matches = app(NexusRetriever::class)->relatedTo($subject->fresh('artists'));
 
-        $this->assertNotEmpty($matches);
+        $this->assertSame($subject->id, $matches->subjectArtworkId);
+        $this->assertFalse($matches->isEmpty());
 
-        $top = $matches->first();
-        $this->assertInstanceOf(ArchiveMatch::class, $top);
+        $top = $matches->related[0];
+        $this->assertInstanceOf(RelatedArtwork::class, $top);
         $this->assertSame($related->id, $top->artworkId);
+        $this->assertSame(RelatedArtwork::KIND_SHARED_ARTIST, $top->kind);
         $this->assertStringContainsString('Thomas Cole', $top->reason);
-        $this->assertNotEmpty($top->citations);
-        $this->assertFalse($matches->contains(fn(ArchiveMatch $match) => $match->artworkId === $unrelated->id));
+        $this->assertGreaterThan(0, count($top->citations));
+        $this->assertNotContains($unrelated->id, $matches->artworkIds());
 
-        // Determinism: same inputs, same output.
-        $again = app(NexusArchiveContract::class)->relatedTo($subject->fresh('artists'));
+        // Determinism: same inputs, same ranked output.
+        $again = app(NexusRetriever::class)->relatedTo($subject->fresh('artists'));
         $this->assertEquals(
-            $matches->map(fn($m) => [$m->artworkId, $m->score])->all(),
-            $again->map(fn($m) => [$m->artworkId, $m->score])->all(),
+            array_map(fn(RelatedArtwork $m) => [$m->artworkId, $m->score], $matches->related),
+            array_map(fn(RelatedArtwork $m) => [$m->artworkId, $m->score], $again->related),
         );
     }
 
-    public function testArchiveMatchRequiresCitations(): void
+    public function testACitationBundleCannotBeEmpty(): void
     {
         $this->expectException(\InvalidArgumentException::class);
 
-        new ArchiveMatch(artworkId: 1, reason: 'vibes', score: 1.0, citations: []);
+        new CitationBundle([]);
+    }
+
+    public function testCitationsQuoteTheGroundingValue(): void
+    {
+        $citation = new Citation(artworkId: 5, field: 'medium', value: 'oil on canvas');
+
+        $this->assertSame(['artwork_id' => 5, 'field' => 'medium', 'value' => 'oil on canvas'], $citation->toArray());
     }
 }

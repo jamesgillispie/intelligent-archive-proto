@@ -53,6 +53,8 @@ class EnvironmentValidationService
         ],
         'memory' => [
             'memory.consent_version' => 'MEMORY_CONSENT_VERSION',
+            'memory.anonymous_explore_rate_limit' => 'MEMORY_ANON_EXPLORE_RATE_LIMIT',
+            'memory.anonymous_context_ttl_minutes' => 'MEMORY_ANON_CONTEXT_TTL_MINUTES',
         ],
         'trails' => [
             'trails.max_per_user' => 'TRAILS_MAX_PER_USER',

@@ -8,6 +8,7 @@ use Illuminate\Validation\Rule;
 use App\Twill\Capsules\Artists\Models\Artist;
 use App\Twill\Capsules\Mediums\Models\Medium;
 use App\Twill\Capsules\Artworks\Models\Artwork;
+use App\Services\Nexus\Contracts\NexusRetriever;
 use App\Twill\Capsules\Departments\Models\Department;
 use App\Twill\Capsules\Classifications\Models\Classification;
 
@@ -77,7 +78,7 @@ class ArtworksController extends Controller
         ]);
     }
 
-    public function show(string $slug): Factory|View
+    public function show(string $slug, NexusRetriever $retriever): Factory|View
     {
         $artwork = Artwork::displayable()
             ->forSlug($slug)
@@ -95,30 +96,42 @@ class ArtworksController extends Controller
 
         return view('site.archive.artwork', [
             'artwork' => $artwork,
-            'moreByArtist' => $this->moreByArtist($artwork),
+            'relatedWorks' => $this->relatedWorks($artwork, $retriever),
         ]);
     }
 
     /**
-     * Human-readable relationship: other displayable works by the same
-     * artist(s), attributed plainly. No AI involved.
+     * Non-personalized related works from the archive knowledge layer,
+     * each with a human-readable reason and citations. Identical for
+     * every visitor, so the public page cache stays valid.
      *
-     * @return \Illuminate\Database\Eloquent\Collection<int, Artwork>
+     * @return list<array{artwork: Artwork, match: \App\Services\Nexus\Artifacts\RelatedArtwork}>
      */
-    protected function moreByArtist(Artwork $artwork): mixed
+    protected function relatedWorks(Artwork $artwork, NexusRetriever $retriever): array
     {
-        $artistIds = $artwork->artists->pluck('id');
+        $set = $retriever->relatedTo($artwork);
 
-        if ($artistIds->isEmpty()) {
-            return Artwork::newModelInstance()->newCollection();
+        if ($set->isEmpty()) {
+            return [];
         }
 
-        return Artwork::displayable()
+        $artworks = Artwork::displayable()
             ->with(['primaryImage', 'medias'])
-            ->whereKeyNot($artwork->id)
-            ->whereHas('artists', fn($q) => $q->whereIn('artists.id', $artistIds))
-            ->orderBy('source_begin_year')
-            ->take(4)
-            ->get();
+            ->findMany($set->artworkIds())
+            ->keyBy('id');
+
+        $related = [];
+
+        foreach ($set as $match) {
+            $model = $artworks->get($match->artworkId);
+
+            if ($model === null) {
+                continue;
+            }
+
+            $related[] = ['artwork' => $model, 'match' => $match];
+        }
+
+        return $related;
     }
 }

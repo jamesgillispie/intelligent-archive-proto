@@ -91,16 +91,20 @@
             </div>
         </div>
 
-        @if ($moreByArtist->isNotEmpty())
+        {{-- Non-personalized, drawn from the collection record alone —
+             identical for every visitor, so the public cache stays valid. --}}
+        @if ($relatedWorks !== [])
             <section class="border-dark-soft border-t py-32">
-                <h2 class="f-ui-01 mb-16 uppercase tracking-wide opacity-60">
-                    More by {{ $artwork->artists->pluck('name')->join(', ') }}
-                </h2>
+                <h2 class="f-ui-01 mb-16 uppercase tracking-wide opacity-60">Related in the collection</h2>
                 <div class="grid grid-cols-2 gap-x-16 gap-y-32 md:grid-cols-4">
-                    @foreach ($moreByArtist as $related)
-                        <x-archive.artwork-card :artwork="$related" />
+                    @foreach ($relatedWorks as $related)
+                        <x-archive.cited-match :artwork="$related['artwork']" :match="$related['match']" />
                     @endforeach
                 </div>
+                <p class="f-ui-01 mt-24 opacity-60">
+                    Relationships are drawn from the collection record — shared artists, medium,
+                    classification and period — never from your activity.
+                </p>
             </section>
         @endif
     </article>
