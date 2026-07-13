@@ -17,6 +17,11 @@ return [
     // requests per session per hour.
     'anonymous_explore_rate_limit' => (int) env('MEMORY_ANON_EXPLORE_RATE_LIMIT', 20),
 
+    // How long anonymous explore context (recent queries, session-scoped,
+    // never linked to an account) is held, in minutes. Hard cap by design:
+    // this must never accumulate into a profile.
+    'anonymous_context_ttl_minutes' => (int) env('MEMORY_ANON_CONTEXT_TTL_MINUTES', 60),
+
     // Default export format for the memory export endpoint (Phase 5).
     'export_format' => env('MEMORY_EXPORT_FORMAT', 'json'),
 ];
