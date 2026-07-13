@@ -435,14 +435,18 @@ class FakeNexus implements NexusIndexer, NexusRetriever
             );
         }
 
-        if ($citations === [] || $score <= 0) {
+        if ($citations === [] || $reasons === []) {
+            // A continuation must have a nameable connection (artist,
+            // medium, period) — classification overlap alone is too weak
+            // to deepen a thread, and those works are exactly the pool
+            // counterpoints draw from.
             return null;
         }
 
         return new RelatedArtwork(
             artworkId: $candidate->id,
             kind: RelatedArtwork::KIND_CONTINUATION,
-            reason: $reasons === [] ? 'Related to works in this set' : ucfirst(implode('; ', $reasons)),
+            reason: ucfirst(implode('; ', $reasons)),
             score: $score,
             citations: new CitationBundle($citations),
         );
