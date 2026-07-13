@@ -1,0 +1,44 @@
+@extends('layouts.main', ['page_id' => 'page-account-consent-revoke'])
+
+@section('content')
+    <div class="mx-auto w-full max-w-[640px] px-16 pb-64 pt-40 md:px-20 lg:pt-64">
+        <header class="pb-24">
+            <h1 class="f-heading-01">Revoke the memory agreement?</h1>
+        </header>
+
+        <p class="f-body max-w-[560px]">
+            The agreement is the only basis on which anything is remembered,
+            so revoking it deletes everything held under it — permanently and
+            immediately:
+        </p>
+
+        <ul class="f-body mt-16 flex max-w-[560px] list-disc flex-col gap-4 pl-20">
+            <li>{{ $counts['trails'] }} {{ $counts['trails'] === 1 ? 'trail' : 'trails' }},
+                holding {{ $counts['works'] }} saved {{ $counts['works'] === 1 ? 'work' : 'works' }}</li>
+            <li>{{ $counts['saves'] }} {{ $counts['saves'] === 1 ? 'save' : 'saves' }} outside trails</li>
+            <li>{{ $counts['notes'] }} {{ $counts['notes'] === 1 ? 'note' : 'notes' }}</li>
+            <li>all {{ $counts['entries'] }} ledger {{ $counts['entries'] === 1 ? 'entry' : 'entries' }}</li>
+            <li>any short-lived held context, purged and verified gone</li>
+        </ul>
+
+        <p class="f-body mt-16 max-w-[560px] opacity-80">
+            Your account stays. You can keep browsing the archive, and you
+            can agree again at any time — starting from nothing. If you want
+            a copy first,
+            <a class="underline" href="{{ route('account.export') }}">export your memory</a>
+            before revoking.
+        </p>
+
+        <form class="mt-32" method="POST" action="{{ route('account.consent.destroy') }}">
+            @csrf
+            @method('DELETE')
+            <button class="f-ui-01 border border-black px-24 py-10" type="submit">
+                Revoke and delete everything
+            </button>
+        </form>
+
+        <nav class="f-ui-01 border-dark-soft mt-32 border-t pt-24">
+            <a class="underline" href="{{ route('account.memory') }}">Keep the agreement — back to your memory</a>
+        </nav>
+    </div>
+@endsection

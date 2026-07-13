@@ -5,6 +5,8 @@ return [
 
     App\Providers\ArchiveServiceProvider::class,
 
+    App\Providers\FortifyServiceProvider::class,
+
     App\Providers\TwillServiceProvider::class,
 
     // App\Providers\RouteServiceProvider::class,

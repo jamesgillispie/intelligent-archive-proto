@@ -10,6 +10,223 @@
  * @author Barry vd. Heuvel <barryvdh@gmail.com>
  */
 
+namespace App\Models\Memory {
+    /**
+     * A save outside any trail — the lightest explicit signal (STRATEGY §3).
+     *
+     * @property int $id
+     * @property int $user_id
+     * @property int $artwork_id
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property-read \App\Twill\Capsules\Artworks\Models\Artwork $artwork
+     * @property-read \App\Models\User $user
+     * @method static \Database\Factories\Memory\ArtworkSaveFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSave newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSave newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSave query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSave whereArtworkId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSave whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSave whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSave whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkSave whereUserId($value)
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperArtworkSave {}
+}
+
+namespace App\Models\Memory {
+    /**
+     * The consent record login creates. Authoritative gate every memory write
+     * checks; export includes it; revocation triggers the deletion flow.
+     *
+     * @property int $id
+     * @property int $user_id
+     * @property string $consent_version
+     * @property \Illuminate\Support\Carbon $granted_at
+     * @property \Illuminate\Support\Carbon|null $revoked_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property-read \App\Models\User $user
+     * @method static \Database\Factories\Memory\MemoryConsentFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent whereConsentVersion($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent whereGrantedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent whereRevokedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent whereUserId($value)
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperMemoryConsent {}
+}
+
+namespace App\Models\Memory {
+    /**
+     * Append-only ledger of every explicit action — the only personalization
+     * input stream there is, fully visible on the memory dashboard. Payloads
+     * snapshot titles so a row stays readable after its subject is deleted.
+     *
+     * @property int $id
+     * @property int $user_id
+     * @property string $event_type
+     * @property string|null $subject_type
+     * @property int|null $subject_id
+     * @property array<array-key, mixed>|null $payload
+     * @property \Illuminate\Support\Carbon $occurred_at
+     * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent|null $subject
+     * @property-read \App\Models\User $user
+     * @method static \Database\Factories\Memory\MemoryEventFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryEvent newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryEvent newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryEvent query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryEvent whereEventType($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryEvent whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryEvent whereOccurredAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryEvent wherePayload($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryEvent whereSubjectId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryEvent whereSubjectType($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryEvent whereUserId($value)
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperMemoryEvent {}
+}
+
+namespace App\Models\Memory {
+    /**
+     * The user's memory switches. Pause != delete: pausing stops writes while
+     * the durable SQL record stays intact and readable.
+     *
+     * @property int $id
+     * @property int $user_id
+     * @property bool $memory_paused
+     * @property bool $semantic_suggestions_enabled
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property-read \App\Models\User $user
+     * @method static \Database\Factories\Memory\PersonalizationSettingFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting whereMemoryPaused($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting whereSemanticSuggestionsEnabled($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting whereUserId($value)
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperPersonalizationSetting {}
+}
+
+namespace App\Models\Memory {
+    /**
+     * A named research trail — the core product object. Trails, not feeds:
+     * a trail only ever contains what its owner explicitly put there.
+     *
+     * @property int $id
+     * @property int $user_id
+     * @property string $title
+     * @property string|null $intent_note
+     * @property string $status
+     * @property \Illuminate\Support\Carbon $last_activity_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Memory\TrailItem> $items
+     * @property-read int|null $items_count
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Memory\UserNote> $notes
+     * @property-read int|null $notes_count
+     * @property-read \App\Models\User $user
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ResearchTrail active()
+     * @method static \Database\Factories\Memory\ResearchTrailFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ResearchTrail newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ResearchTrail newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ResearchTrail query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ResearchTrail whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ResearchTrail whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ResearchTrail whereIntentNote($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ResearchTrail whereLastActivityAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ResearchTrail whereStatus($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ResearchTrail whereTitle($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ResearchTrail whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ResearchTrail whereUserId($value)
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperResearchTrail {}
+}
+
+namespace App\Models\Memory {
+    /**
+     * One artwork in a trail. The origin field keeps AI influence inspectable:
+     * user_saved from day one, suggestion_accepted when recommendations arrive.
+     *
+     * @property int $id
+     * @property int $research_trail_id
+     * @property int $artwork_id
+     * @property int $position
+     * @property string $origin
+     * @property string|null $note
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property-read \App\Twill\Capsules\Artworks\Models\Artwork $artwork
+     * @property-read \App\Models\Memory\ResearchTrail $trail
+     * @method static \Database\Factories\Memory\TrailItemFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|TrailItem newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|TrailItem newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|TrailItem query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|TrailItem whereArtworkId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|TrailItem whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|TrailItem whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|TrailItem whereNote($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|TrailItem whereOrigin($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|TrailItem wherePosition($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|TrailItem whereResearchTrailId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|TrailItem whereUpdatedAt($value)
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperTrailItem {}
+}
+
+namespace App\Models\Memory {
+    /**
+     * A freeform private note on a trail (or, later, an artwork). Never an AI
+     * input without an explicit consent flag (STRATEGY §3).
+     *
+     * @property int $id
+     * @property int $user_id
+     * @property string $notable_type
+     * @property int $notable_id
+     * @property string $body
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $notable
+     * @property-read \App\Models\User $user
+     * @method static \Database\Factories\Memory\UserNoteFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|UserNote newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|UserNote newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|UserNote query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|UserNote whereBody($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|UserNote whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|UserNote whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|UserNote whereNotableId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|UserNote whereNotableType($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|UserNote whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|UserNote whereUserId($value)
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperUserNote {}
+}
+
 namespace App\Models\Source {
     /**
      * Typed view over source_records rows from published_images.csv.
@@ -153,8 +370,20 @@ namespace App\Models {
      * @property string|null $remember_token
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Memory\ArtworkSave> $artworkSaves
+     * @property-read int|null $artwork_saves_count
+     * @property-read \App\Models\Memory\MemoryConsent|null $memoryConsent
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Memory\MemoryConsent> $memoryConsents
+     * @property-read int|null $memory_consents_count
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Memory\MemoryEvent> $memoryEvents
+     * @property-read int|null $memory_events_count
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Memory\UserNote> $notes
+     * @property-read int|null $notes_count
      * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
      * @property-read int|null $notifications_count
+     * @property-read \App\Models\Memory\PersonalizationSetting|null $personalizationSetting
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Memory\ResearchTrail> $trails
+     * @property-read int|null $trails_count
      * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
      * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()

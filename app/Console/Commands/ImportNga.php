@@ -61,6 +61,24 @@ class ImportNga extends Command
             $this->table(['Source records', 'Count'], $rows);
         }
 
+        /** @var array<string, array<string, int>> $sweep */
+        $sweep = $report['missing_sweep'] ?? [];
+        $sweepRows = [];
+
+        foreach ($sweep as $table => $counts) {
+            foreach ($counts as $result => $count) {
+                $sweepRows[] = ["{$table} {$result}", $count];
+            }
+        }
+
+        if ($sweepRows !== []) {
+            $this->table(['Missing-from-source sweep', 'Count'], $sweepRows);
+        }
+
+        if (isset($report['snapshot']['sha'])) {
+            $this->comment("Snapshot: upstream commit {$report['snapshot']['sha']}.");
+        }
+
         if (!$this->option('sync')) {
             $this->comment('Canonicalization dispatched to the queue; run a worker if QUEUE_CONNECTION is not sync.');
         }

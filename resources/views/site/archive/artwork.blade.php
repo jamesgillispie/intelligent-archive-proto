@@ -43,6 +43,12 @@
                             <span class="opacity-60">· {{ $artwork->display_date }}</span>
                         @endif
                     </p>
+
+                    {{-- Static for every visitor (this page is publicly cached);
+                         the picker behind it is uncached and consent-gated. --}}
+                    <p class="f-ui-01 mt-12">
+                        <a class="underline" href="{{ route('account.save', $artwork->slug) }}">Save to trail</a>
+                    </p>
                 </header>
 
                 @if ($artwork->description)
