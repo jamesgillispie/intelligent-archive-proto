@@ -61,6 +61,9 @@
 
                             <div class="f-ui-01 mt-8 flex items-center gap-16 opacity-60">
                                 <span>Added {{ $item->created_at->format('j M Y') }}</span>
+                                @if ($item->origin === \App\Models\Memory\TrailItem::ORIGIN_SUGGESTION_ACCEPTED)
+                                    <span>From a suggestion you accepted</span>
+                                @endif
                                 <form method="POST"
                                     action="{{ route('account.trails.items.destroy', [$trail->id, $item->id]) }}">
                                     @csrf
@@ -72,6 +75,51 @@
                     </li>
                 @endforeach
             </ol>
+        @endif
+
+        @if ($canExpand || $continuationSuggestions->isNotEmpty() || $counterpointSuggestions->isNotEmpty())
+            <section class="border-dark-soft mt-32 border-t pt-24" id="suggestions">
+                <h2 class="f-ui-01 mb-8 uppercase tracking-wide opacity-60">Suggestions</h2>
+                <p class="f-body mb-16 max-w-[640px] opacity-80">
+                    Grounded in the works you chose — continuations that deepen
+                    this thread, and counterpoints that broaden it. Each one
+                    explains itself; dismiss it and it won’t be suggested again.
+                </p>
+
+                @if ($continuationSuggestions->isNotEmpty())
+                    <h3 class="f-ui-01 mb-12 opacity-60">Continuations</h3>
+                    <div class="grid grid-cols-2 gap-x-16 gap-y-32 md:grid-cols-3">
+                        @foreach ($continuationSuggestions as $suggestion)
+                            <x-memory.suggestion-card :recommendation="$suggestion" />
+                        @endforeach
+                    </div>
+                @endif
+
+                @if ($counterpointSuggestions->isNotEmpty())
+                    <h3 class="f-ui-01 mb-12 mt-24 opacity-60">Counterpoints</h3>
+                    <div class="grid grid-cols-2 gap-x-16 gap-y-32 md:grid-cols-3">
+                        @foreach ($counterpointSuggestions as $suggestion)
+                            <x-memory.suggestion-card :recommendation="$suggestion" />
+                        @endforeach
+                    </div>
+                @endif
+
+                @error('suggestion')
+                    <p class="f-ui-01 mt-16 text-[#9b3324]" role="alert">{{ $message }}</p>
+                @enderror
+
+                @if ($canExpand)
+                    <form class="mt-16" method="POST" action="{{ route('account.trails.expand', $trail->id) }}">
+                        @csrf
+                        <button class="f-ui-01 border border-black px-24 py-10" type="submit">
+                            Expand this trail
+                        </button>
+                    </form>
+                    @error('trail')
+                        <p class="f-ui-01 mt-8 text-[#9b3324]" role="alert">{{ $message }}</p>
+                    @enderror
+                @endif
+            </section>
         @endif
 
         <section class="border-dark-soft mt-32 border-t pt-24">

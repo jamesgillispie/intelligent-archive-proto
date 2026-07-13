@@ -69,9 +69,38 @@ class TrailsController extends Controller
 
         $this->trails->recordRevisit($trail);
 
+        // Open suggestions render until answered — the Recommendation rows
+        // are the durable record of what was shown, so nothing depends on
+        // the redirect that created them. Works that stopped being
+        // displayable since simply don't render.
+        $open = $trail->recommendations()->open()->orderBy('id')->get();
+
+        $suggested = Artwork::displayable()
+            ->with(['primaryImage', 'medias'])
+            ->findMany($open->pluck('artwork_id'))
+            ->keyBy('id');
+
+        $suggestions = $open
+            ->filter(fn($recommendation) => $suggested->has($recommendation->artwork_id))
+            ->each(
+                fn($recommendation) => $recommendation->setRelation(
+                    'artwork',
+                    $suggested->get($recommendation->artwork_id),
+                ),
+            )
+            ->groupBy('kind');
+
+        $paused = $this->consent->isPaused($request->user());
+
         return view('site.account.trail', [
             'trail' => $trail,
-            'paused' => $this->consent->isPaused($request->user()),
+            'paused' => $paused,
+            'continuationSuggestions' => $suggestions->get('continuation', collect()),
+            'counterpointSuggestions' => $suggestions->get('counterpoint', collect()),
+            'canExpand' =>
+                !$paused &&
+                !$trail->isArchived() &&
+                $trail->items->count() >= (int) config('trails.expansion_min_items'),
         ]);
     }
 
