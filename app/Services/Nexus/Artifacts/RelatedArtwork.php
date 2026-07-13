@@ -15,6 +15,10 @@ final readonly class RelatedArtwork
 
     public const KIND_QUERY_MATCH = 'query_match';
 
+    public const KIND_CONTINUATION = 'continuation';
+
+    public const KIND_COUNTERPOINT = 'counterpoint';
+
     public function __construct(
         public int $artworkId,
         public string $kind,
