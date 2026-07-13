@@ -49,6 +49,10 @@ class MemoryEvent extends Model
 
     public const CONSENT_RENEWED = 'consent_renewed';
 
+    public const CONSENT_REVOKED = 'consent_revoked';
+
+    public const MEMORY_DELETED = 'memory_deleted';
+
     public $timestamps = false;
 
     protected $fillable = ['user_id', 'event_type', 'payload', 'occurred_at'];
@@ -88,7 +92,30 @@ class MemoryEvent extends Model
             self::MEMORY_PAUSED => 'Paused memory',
             self::MEMORY_RESUMED => 'Resumed memory',
             self::CONSENT_RENEWED => 'Renewed the memory agreement',
+            self::CONSENT_REVOKED => 'Revoked the memory agreement',
+            self::MEMORY_DELETED => $this->memoryDeletedDescription(),
             default => ucfirst(str_replace('_', ' ', $this->event_type)),
         };
+    }
+
+    /**
+     * The deletion receipt in plain language: how much disappeared, nothing
+     * about what it was.
+     */
+    private function memoryDeletedDescription(): string
+    {
+        $number = function (string $key, string $singular, string $plural): string {
+            $count = (int) ($this->payload[$key] ?? 0);
+
+            return $count === 1 ? "1 {$singular}" : "{$count} {$plural}";
+        };
+
+        return 'Deleted all memory held at the time — ' .
+            collect([
+                $number('trails', 'trail', 'trails'),
+                $number('saves', 'save', 'saves'),
+                $number('notes', 'note', 'notes'),
+                $number('entries', 'earlier ledger entry', 'earlier ledger entries'),
+            ])->join(', ', ' and ');
     }
 }
