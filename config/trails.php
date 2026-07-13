@@ -14,4 +14,8 @@ return [
 
     // Suggestions returned per expansion request.
     'suggestions_per_expansion' => (int) env('TRAILS_SUGGESTIONS_PER_EXPANSION', 6),
+
+    // Reopening a trail within this window is one visit, not several; the
+    // ledger records deliberate returns, not page refreshes.
+    'revisit_dedupe_minutes' => (int) env('TRAILS_REVISIT_DEDUPE_MINUTES', 60),
 ];
