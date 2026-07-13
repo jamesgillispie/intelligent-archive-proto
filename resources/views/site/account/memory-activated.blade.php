@@ -15,6 +15,7 @@
         <nav class="f-ui-01 flex gap-24">
             <a class="underline" href="{{ route('archive.index') }}">Continue to the archive</a>
             <a class="underline opacity-60" href="{{ route('account.trails') }}">Your trails</a>
+            <a class="underline opacity-60" href="{{ route('account.memory') }}">View memory</a>
         </nav>
     </div>
 @endsection

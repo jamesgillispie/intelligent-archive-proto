@@ -29,6 +29,7 @@ class TrailService
         string $title,
         ?string $intentNote = null,
         ?Artwork $firstArtwork = null,
+        ?string $firstItemNote = null,
     ): ResearchTrail {
         if ($user->trails()->count() >= config('trails.max_per_user')) {
             throw ValidationException::withMessages([
@@ -36,7 +37,7 @@ class TrailService
             ]);
         }
 
-        return DB::transaction(function () use ($user, $title, $intentNote, $firstArtwork) {
+        return DB::transaction(function () use ($user, $title, $intentNote, $firstArtwork, $firstItemNote) {
             $trail = $user->trails()->create([
                 'title' => $title,
                 'intent_note' => $intentNote,
@@ -46,7 +47,7 @@ class TrailService
             $this->events->record($user, MemoryEvent::TRAIL_STARTED, $trail, ['trail_title' => $trail->title]);
 
             if ($firstArtwork !== null) {
-                $this->addArtwork($trail, $firstArtwork);
+                $this->addArtwork($trail, $firstArtwork, $firstItemNote);
             }
 
             return $trail;
