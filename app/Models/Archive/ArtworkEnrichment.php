@@ -20,6 +20,8 @@ use Database\Factories\Archive\ArtworkEnrichmentFactory;
  *
  * Nothing generates enrichments yet; the model exists so that exclusion
  * is enforced and testable from the first indexed document.
+ *
+ * @mixin IdeHelperArtworkEnrichment
  */
 class ArtworkEnrichment extends Model
 {

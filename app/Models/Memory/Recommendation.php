@@ -16,6 +16,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * answers from this row, never from a fresh query, so the explanation is
  * what happened rather than a post-hoc rationalization. Dismissed rows
  * suppress the work from ever being suggested again.
+ *
+ * @mixin IdeHelperRecommendation
  */
 class Recommendation extends Model
 {

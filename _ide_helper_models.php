@@ -10,6 +10,55 @@
  * @author Barry vd. Heuvel <barryvdh@gmail.com>
  */
 
+namespace App\Models\Archive {
+    /**
+     * AI-generated field values awaiting review (STRATEGY §4). Generated text
+     * lives here — never in display columns — until a human approves it;
+     * approval copies the value into the corresponding editorial override
+     * with a review trail. The Nexus document builder indexes approved rows
+     * only, so unreviewed AI text is structurally unable to reach either the
+     * display layer or the archive knowledge layer.
+     *
+     * Nothing generates enrichments yet; the model exists so that exclusion
+     * is enforced and testable from the first indexed document.
+     *
+     * @property int $id
+     * @property int $artwork_id
+     * @property string $field
+     * @property string $generated_text
+     * @property string|null $model_ref
+     * @property string|null $prompt_ref
+     * @property string $status
+     * @property int|null $reviewed_by
+     * @property \Illuminate\Support\Carbon|null $reviewed_at
+     * @property array<array-key, mixed>|null $citations
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property-read \App\Twill\Capsules\Artworks\Models\Artwork $artwork
+     * @property-read \App\Models\User|null $reviewer
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkEnrichment approved()
+     * @method static \Database\Factories\Archive\ArtworkEnrichmentFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkEnrichment newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkEnrichment newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkEnrichment query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkEnrichment whereArtworkId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkEnrichment whereCitations($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkEnrichment whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkEnrichment whereField($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkEnrichment whereGeneratedText($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkEnrichment whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkEnrichment whereModelRef($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkEnrichment wherePromptRef($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkEnrichment whereReviewedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkEnrichment whereReviewedBy($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkEnrichment whereStatus($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|ArtworkEnrichment whereUpdatedAt($value)
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperArtworkEnrichment {}
+}
+
 namespace App\Models\Memory {
     /**
      * A save outside any trail — the lightest explicit signal (STRATEGY §3).
@@ -128,6 +177,53 @@ namespace App\Models\Memory {
 
 namespace App\Models\Memory {
     /**
+     * One suggestion the system actually showed, kept verbatim — reason,
+     * evidence, and the context it was drawn from. "Why this suggestion?"
+     * answers from this row, never from a fresh query, so the explanation is
+     * what happened rather than a post-hoc rationalization. Dismissed rows
+     * suppress the work from ever being suggested again.
+     *
+     * @property int $id
+     * @property int $user_id
+     * @property int $research_trail_id
+     * @property int $artwork_id
+     * @property string $kind
+     * @property string $reason
+     * @property array<array-key, mixed> $citations
+     * @property array<array-key, mixed> $context
+     * @property string $status
+     * @property \Illuminate\Support\Carbon|null $responded_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property-read \App\Twill\Capsules\Artworks\Models\Artwork $artwork
+     * @property-read \App\Models\Memory\ResearchTrail $trail
+     * @property-read \App\Models\User $user
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Recommendation dismissed()
+     * @method static \Database\Factories\Memory\RecommendationFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Recommendation newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Recommendation newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Recommendation open()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Recommendation query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Recommendation whereArtworkId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Recommendation whereCitations($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Recommendation whereContext($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Recommendation whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Recommendation whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Recommendation whereKind($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Recommendation whereReason($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Recommendation whereResearchTrailId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Recommendation whereRespondedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Recommendation whereStatus($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Recommendation whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|Recommendation whereUserId($value)
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperRecommendation {}
+}
+
+namespace App\Models\Memory {
+    /**
      * A named research trail — the core product object. Trails, not feeds:
      * a trail only ever contains what its owner explicitly put there.
      *
@@ -143,6 +239,8 @@ namespace App\Models\Memory {
      * @property-read int|null $items_count
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Memory\UserNote> $notes
      * @property-read int|null $notes_count
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Memory\Recommendation> $recommendations
+     * @property-read int|null $recommendations_count
      * @property-read \App\Models\User $user
      * @method static \Illuminate\Database\Eloquent\Builder<static>|ResearchTrail active()
      * @method static \Database\Factories\Memory\ResearchTrailFactory factory($count = null, $state = [])
@@ -382,6 +480,8 @@ namespace App\Models {
      * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
      * @property-read int|null $notifications_count
      * @property-read \App\Models\Memory\PersonalizationSetting|null $personalizationSetting
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Memory\Recommendation> $recommendations
+     * @property-read int|null $recommendations_count
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Memory\ResearchTrail> $trails
      * @property-read int|null $trails_count
      * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
@@ -958,6 +1058,8 @@ namespace App\Twill\Capsules\Artworks\Models {
      * @property-read int|null $artists_count
      * @property-read \App\Twill\Capsules\Classifications\Models\Classification|null $classification
      * @property-read \App\Twill\Capsules\Departments\Models\Department|null $department
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Archive\ArtworkEnrichment> $enrichments
+     * @property-read int|null $enrichments_count
      * @property string $slug
      * @property-read mixed $social_image
      * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Twill\Capsules\Artworks\Models\ImageAsset> $images
