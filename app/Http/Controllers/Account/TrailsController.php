@@ -10,11 +10,16 @@ use App\Models\Memory\ResearchTrail;
 use App\Services\Trails\TrailService;
 use Illuminate\Http\RedirectResponse;
 use App\Services\Memory\ConsentService;
+use App\Services\Memory\TrailMemoryService;
 use App\Twill\Capsules\Artworks\Models\Artwork;
 
 class TrailsController extends Controller
 {
-    public function __construct(private readonly TrailService $trails, private readonly ConsentService $consent) {}
+    public function __construct(
+        private readonly TrailService $trails,
+        private readonly ConsentService $consent,
+        private readonly TrailMemoryService $trailMemory,
+    ) {}
 
     public function index(Request $request): View
     {
@@ -23,9 +28,9 @@ class TrailsController extends Controller
         return view('site.account.trails', [
             'activeTrails' => $trails->where('status', ResearchTrail::STATUS_ACTIVE)->values(),
             'archivedTrails' => $trails->where('status', ResearchTrail::STATUS_ARCHIVED)->values(),
-            // The quiet "continue where I left off" — most recent activity,
-            // resolved from SQL (the Iris pointer arrives in Phase 5).
-            'continueTrail' => $trails->firstWhere('status', ResearchTrail::STATUS_ACTIVE),
+            // The quiet "continue where I left off" — the Iris pointer
+            // supplies the hint, SQL verifies, a miss rebuilds (flow B).
+            'continueTrail' => $this->trailMemory->activeTrail($request->user()),
             'paused' => $this->consent->isPaused($request->user()),
         ]);
     }

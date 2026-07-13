@@ -9,19 +9,23 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Memory\ResearchTrail;
 use App\Services\Memory\ConsentService;
 use App\Services\Memory\MemoryEventService;
+use App\Services\Memory\TrailMemoryService;
 use Illuminate\Validation\ValidationException;
 use App\Twill\Capsules\Artworks\Models\Artwork;
 
 /**
  * Every trail mutation is one transaction: the SQL rows and the ledger
  * event land together or not at all. Trails only ever contain what their
- * owner explicitly put there.
+ * owner explicitly put there. After each transaction commits, the Iris
+ * active-trail pointer catches up — derived context following the durable
+ * record, never the other way around.
  */
 class TrailService
 {
     public function __construct(
         private readonly MemoryEventService $events,
         private readonly ConsentService $consent,
+        private readonly TrailMemoryService $trailMemory,
     ) {}
 
     public function start(
@@ -37,7 +41,7 @@ class TrailService
             ]);
         }
 
-        return DB::transaction(function () use ($user, $title, $intentNote, $firstArtwork, $firstItemNote) {
+        $trail = DB::transaction(function () use ($user, $title, $intentNote, $firstArtwork, $firstItemNote) {
             $trail = $user->trails()->create([
                 'title' => $title,
                 'intent_note' => $intentNote,
@@ -52,6 +56,10 @@ class TrailService
 
             return $trail;
         });
+
+        $this->trailMemory->refreshActiveTrail($trail);
+
+        return $trail;
     }
 
     public function addArtwork(
@@ -73,7 +81,7 @@ class TrailService
             ]);
         }
 
-        return DB::transaction(function () use ($trail, $artwork, $note, $origin) {
+        $item = DB::transaction(function () use ($trail, $artwork, $note, $origin) {
             $item = $trail->items()->create([
                 'artwork_id' => $artwork->id,
                 'position' => ((int) $trail->items()->max('position')) + 1,
@@ -90,13 +98,17 @@ class TrailService
 
             return $item;
         });
+
+        $this->trailMemory->refreshActiveTrail($trail);
+
+        return $item;
     }
 
     public function removeItem(TrailItem $item): void
     {
-        DB::transaction(function () use ($item) {
-            $trail = $item->trail;
+        $trail = $item->trail;
 
+        DB::transaction(function () use ($item, $trail) {
             $this->events->record($trail->user, MemoryEvent::TRAIL_ITEM_REMOVED, $trail, [
                 'artwork_title' => $item->artwork->title,
                 'trail_title' => $trail->title,
@@ -105,6 +117,8 @@ class TrailService
             $item->delete();
             $trail->touchActivity();
         });
+
+        $this->trailMemory->refreshActiveTrail($trail);
     }
 
     public function archive(ResearchTrail $trail): void
@@ -116,6 +130,9 @@ class TrailService
                 'trail_title' => $trail->title,
             ]);
         });
+
+        // An archived trail is no longer a place to continue.
+        $this->trailMemory->forgetActiveTrail($trail->user, $trail->id);
     }
 
     public function reactivate(ResearchTrail $trail): void
@@ -127,10 +144,15 @@ class TrailService
                 'trail_title' => $trail->title,
             ]);
         });
+
+        $this->trailMemory->refreshActiveTrail($trail);
     }
 
     public function delete(ResearchTrail $trail): void
     {
+        $user = $trail->user;
+        $trailId = $trail->id;
+
         DB::transaction(function () use ($trail) {
             // The ledger keeps a snapshot, not a reference — deletion is a
             // right, and the receipt must outlive the trail.
@@ -142,6 +164,8 @@ class TrailService
             $trail->notes()->delete();
             $trail->delete(); // items cascade at the database level
         });
+
+        $this->trailMemory->forgetActiveTrail($user, $trailId);
     }
 
     /**
@@ -166,5 +190,7 @@ class TrailService
 
             $trail->touchActivity();
         });
+
+        $this->trailMemory->refreshActiveTrail($trail);
     }
 }

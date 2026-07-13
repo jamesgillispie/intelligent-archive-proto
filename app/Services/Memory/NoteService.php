@@ -16,11 +16,14 @@ use App\Twill\Capsules\Artworks\Models\Artwork;
  */
 class NoteService
 {
-    public function __construct(private readonly MemoryEventService $events) {}
+    public function __construct(
+        private readonly MemoryEventService $events,
+        private readonly TrailMemoryService $trailMemory,
+    ) {}
 
     public function write(User $user, Model $notable, string $body): UserNote
     {
-        return DB::transaction(function () use ($user, $notable, $body) {
+        $note = DB::transaction(function () use ($user, $notable, $body) {
             $note = new UserNote(['body' => $body]);
             $note->user()->associate($user);
             $note->notable()->associate($notable);
@@ -34,6 +37,12 @@ class NoteService
 
             return $note;
         });
+
+        if ($notable instanceof ResearchTrail) {
+            $this->trailMemory->refreshActiveTrail($notable);
+        }
+
+        return $note;
     }
 
     public function delete(UserNote $note): void
