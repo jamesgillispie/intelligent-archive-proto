@@ -81,10 +81,19 @@ class NgaImportService
      */
     protected function execute(SourceImport $import, string $path, int $limit, bool $queue, bool $downloadImages): array
     {
+        // Sweep bookkeeping: which of the source rows we already hold
+        // appear anywhere in this snapshot, selected or not. Absence from
+        // the files — never absence from the curated subset — is what
+        // "missing from source" means.
+        $known = $this->knownSourceIds();
+        $present = [];
+
         // Pass 1: object ids that have a primary published image.
         $withPrimaryImage = [];
 
         foreach ($this->reader->rows("{$path}/published_images.csv") as $row) {
+            $this->markPresent($present, $known, SourceRecord::TABLE_PUBLISHED_IMAGES, $row['uuid'] ?? '');
+
             if (($row['viewtype'] ?? '') === 'primary' && ($row['depictstmsobjectid'] ?? '') !== '') {
                 $withPrimaryImage[$row['depictstmsobjectid']] = true;
             }
@@ -101,6 +110,8 @@ class NgaImportService
 
         foreach ($this->reader->rows("{$path}/objects.csv") as $row) {
             $objectsSeen++;
+
+            $this->markPresent($present, $known, SourceRecord::TABLE_OBJECTS, $row['objectid'] ?? '');
 
             if (!$this->isEligible($row, $classification, $accessionedOnly, $requireImage, $withPrimaryImage)) {
                 continue;
@@ -132,36 +143,35 @@ class NgaImportService
 
         foreach ($this->reader->rows("{$path}/objects_constituents.csv") as $row) {
             $objectId = $row['objectid'] ?? '';
-
-            if ($objectId === '' || !isset($selected[$objectId]) || ($row['roletype'] ?? '') !== 'artist') {
-                continue;
-            }
-
             $constituentId = $row['constituentid'] ?? '';
 
-            if ($constituentId === '') {
+            if ($objectId === '' || $constituentId === '') {
                 continue;
             }
-
-            $constituentIds[$constituentId] = true;
 
             // Role is part of the key: NGA ships multiple join rows for the
             // same (object, constituent) pair that differ only in role text.
             // Keying by pair alone made those rows fight over one record and
             // report "updated" on every run.
             $role = trim($row['role'] ?? '');
+            $joinKey = "{$objectId}:{$constituentId}:{$role}";
 
-            $this->mapper->record(
-                $import,
-                SourceRecord::TABLE_OBJECTS_CONSTITUENTS,
-                "{$objectId}:{$constituentId}:{$role}",
-                $row,
-            );
+            $this->markPresent($present, $known, SourceRecord::TABLE_OBJECTS_CONSTITUENTS, $joinKey);
+
+            if (!isset($selected[$objectId]) || ($row['roletype'] ?? '') !== 'artist') {
+                continue;
+            }
+
+            $constituentIds[$constituentId] = true;
+
+            $this->mapper->record($import, SourceRecord::TABLE_OBJECTS_CONSTITUENTS, $joinKey, $row);
         }
 
         // Pass 5: constituents for the selected joins.
         foreach ($this->reader->rows("{$path}/constituents.csv") as $row) {
             $constituentId = $row['constituentid'] ?? '';
+
+            $this->markPresent($present, $known, SourceRecord::TABLE_CONSTITUENTS, $constituentId);
 
             if ($constituentId !== '' && isset($constituentIds[$constituentId])) {
                 $this->mapper->record($import, SourceRecord::TABLE_CONSTITUENTS, $constituentId, $row);
@@ -175,7 +185,7 @@ class NgaImportService
             $queue ? dispatch($job) : dispatch_sync($job);
         }
 
-        return [
+        $report = [
             'totals' => [
                 'objects_seen' => $objectsSeen,
                 'objects_eligible' => $eligible,
@@ -184,6 +194,115 @@ class NgaImportService
                 'canonicalization_jobs' => count($selected),
             ],
             'source_records' => $this->mapper->counts(),
+            'missing_sweep' => $this->sweepMissing($known, $present),
+        ];
+
+        $snapshot = $this->snapshotManifest($path);
+
+        if ($snapshot !== null) {
+            $report['snapshot'] = $snapshot;
+        }
+
+        return $report;
+    }
+
+    /**
+     * Source ids already held per table, so the sweep can tell "absent
+     * from this snapshot" apart from "never imported".
+     *
+     * @return array<string, array<string|int, true>>
+     */
+    protected function knownSourceIds(): array
+    {
+        $known = [];
+
+        foreach (array_keys(self::FILES) as $table) {
+            $ids = SourceRecord::forTable($table)->pluck('source_id')->all();
+
+            $known[$table] = $ids === [] ? [] : array_fill_keys($ids, true);
+        }
+
+        return $known;
+    }
+
+    /**
+     * @param  array<string, array<string|int, true>>  $present
+     * @param  array<string, array<string|int, true>>  $known
+     */
+    protected function markPresent(array &$present, array $known, string $table, string $id): void
+    {
+        if ($id !== '' && isset($known[$table][$id])) {
+            $present[$table][$id] = true;
+        }
+    }
+
+    /**
+     * Records absent from the snapshot are stamped missing_from_source_at;
+     * previously-missing records that reappear are cleared, even when the
+     * subset filter leaves them unselected. Nothing is ever deleted.
+     *
+     * @param  array<string, array<string|int, true>>  $known
+     * @param  array<string, array<string|int, true>>  $present
+     * @return array<string, array<string, int>>
+     */
+    protected function sweepMissing(array $known, array $present): array
+    {
+        $report = [];
+        $now = now();
+
+        foreach ($known as $table => $ids) {
+            $missingIds = array_keys(array_diff_key($ids, $present[$table] ?? []));
+            $presentIds = array_keys($present[$table] ?? []);
+
+            $marked = 0;
+
+            foreach (array_chunk($missingIds, 500) as $chunk) {
+                $marked += SourceRecord::forTable($table)
+                    ->whereIn('source_id', array_map('strval', $chunk))
+                    ->whereNull('missing_from_source_at')
+                    ->update(['missing_from_source_at' => $now]);
+            }
+
+            $reappeared = 0;
+
+            foreach (array_chunk($presentIds, 500) as $chunk) {
+                $reappeared += SourceRecord::forTable($table)
+                    ->whereIn('source_id', array_map('strval', $chunk))
+                    ->whereNotNull('missing_from_source_at')
+                    ->update(['missing_from_source_at' => null]);
+            }
+
+            if ($marked > 0 || $reappeared > 0) {
+                $report[$table] = ['marked_missing' => $marked, 'reappeared' => $reappeared];
+            }
+        }
+
+        return $report;
+    }
+
+    /**
+     * The snapshot.json manifest nga:fetch writes next to the CSVs — the
+     * pinned upstream commit this import actually read.
+     *
+     * @return array<string, mixed>|null
+     */
+    protected function snapshotManifest(string $path): ?array
+    {
+        $file = "{$path}/snapshot.json";
+
+        if (!is_readable($file)) {
+            return null;
+        }
+
+        $manifest = json_decode((string) file_get_contents($file), true);
+
+        if (!is_array($manifest)) {
+            return null;
+        }
+
+        return [
+            'sha' => $manifest['sha'] ?? null,
+            'fetched_at' => $manifest['fetched_at'] ?? null,
         ];
     }
 

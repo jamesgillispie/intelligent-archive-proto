@@ -28,6 +28,13 @@ class EnvironmentValidationService
             'nga.import.limit' => 'NGA_IMPORT_LIMIT',
             'nga.import.classification' => 'NGA_IMPORT_CLASSIFICATION',
         ],
+        'nga-fetch' => [
+            'nga.fetch.repo' => 'NGA_FETCH_REPO',
+            'nga.fetch.branch' => 'NGA_FETCH_BRANCH',
+            'nga.fetch.raw_base_url' => 'NGA_FETCH_RAW_BASE_URL',
+            'nga.fetch.api_base_url' => 'NGA_FETCH_API_BASE_URL',
+            'nga.fetch.snapshots_path' => 'NGA_FETCH_SNAPSHOTS_PATH',
+        ],
         'nexus' => [
             'nexus.driver' => 'NEXUS_DRIVER',
             'nexus.index_name' => 'NEXUS_INDEX_NAME',
