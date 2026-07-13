@@ -191,6 +191,68 @@ class NgaImportTest extends TestCase
         $this->assertFalse($artwork->fresh()->published);
     }
 
+    public function testRecordsAbsentFromALaterSnapshotAreSweptAndReappearanceClears(): void
+    {
+        $workingPath = storage_path('framework/testing/nga-sweep-fixtures');
+        File::deleteDirectory($workingPath);
+        File::copyDirectory($this->fixturePath(), $workingPath);
+
+        $this->runImport($workingPath);
+
+        // Upstream drops object 104 and its image row from the snapshot.
+        foreach (['objects.csv', 'published_images.csv'] as $file) {
+            $lines = array_filter(
+                explode("\n", File::get("{$workingPath}/{$file}")),
+                fn(string $line) => !str_contains($line, 'Autumn Landscape') && !str_starts_with($line, 'img-104'),
+            );
+            File::put("{$workingPath}/{$file}", implode("\n", $lines));
+        }
+
+        $this->runImport($workingPath);
+
+        $swept = SourceRecord::forTable(SourceRecord::TABLE_OBJECTS)->where('source_id', '104')->firstOrFail();
+
+        // Flagged, never deleted — the raw payload survives untouched.
+        $this->assertNotNull($swept->missing_from_source_at);
+        $this->assertSame('Autumn Landscape', $swept->payloadValue('title'));
+        $this->assertNotNull(
+            SourceRecord::forTable(SourceRecord::TABLE_PUBLISHED_IMAGES)
+                ->where('source_id', 'img-104')
+                ->value('missing_from_source_at'),
+        );
+
+        // Rows still present in the snapshot are untouched.
+        $this->assertNull(
+            SourceRecord::forTable(SourceRecord::TABLE_OBJECTS)
+                ->where('source_id', '100')
+                ->value('missing_from_source_at'),
+        );
+
+        /** @var array<string, array<string, int>> $sweep */
+        $sweep = SourceImport::query()->latest('id')->firstOrFail()->report['missing_sweep'];
+        $this->assertSame(1, $sweep['objects']['marked_missing']);
+        $this->assertSame(1, $sweep['published_images']['marked_missing']);
+
+        // The record reappears upstream: the stamp clears.
+        File::copyDirectory($this->fixturePath(), $workingPath);
+        $this->runImport($workingPath);
+
+        $this->assertNull($swept->fresh()->missing_from_source_at);
+
+        File::deleteDirectory($workingPath);
+    }
+
+    public function testUnselectedButPresentRecordsAreNotSwept(): void
+    {
+        $this->runImport();
+
+        // A tighter subset limit leaves records unselected — but they are
+        // still in the snapshot, so nothing is "missing from source".
+        $this->runImport(limit: 1);
+
+        $this->assertSame(0, SourceRecord::whereNotNull('missing_from_source_at')->count());
+    }
+
     public function testMissingFilesFailLoudlyWithFilenames(): void
     {
         $this->artisan('nga:import', ['--path' => storage_path('nowhere'), '--sync' => true])
