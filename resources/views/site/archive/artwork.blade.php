@@ -14,8 +14,10 @@
             @endphp
             <figure>
                 <div @class(['aspect-[4/5]' => !$hasVisual])>
+                    {{-- When assistive text is shown as the figcaption below, the
+                         alt falls back to the title so it is not announced twice. --}}
                     <x-archive.artwork-image :artwork="$artwork" :widths="[800, 1400]" sizes="(min-width: 900px) 60vw, 100vw"
-                        :eager="true" img-class="h-auto w-full"
+                        :eager="true" img-class="h-auto w-full" :alt="$artwork->primaryImage?->assistive_text ? $artwork->title : null"
                         placeholder="No open-access image is available for this work." />
                 </div>
                 @if ($artwork->primaryImage?->assistive_text)

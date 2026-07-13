@@ -84,14 +84,15 @@
                 <div class="border-dark-soft flex items-baseline justify-between gap-16 border-t py-12">
                     <a class="f-body underline"
                         href="{{ route('archive.artworks.show', $save->artwork->slug) }}">{{ $save->artwork->title }}</a>
-                    <span class="f-ui-01 flex shrink-0 items-center gap-16 opacity-60">
-                        {{ $save->created_at->format('j M Y') }}
+                    <div class="f-ui-01 flex shrink-0 items-baseline gap-16 opacity-60">
+                        <span>{{ $save->created_at->format('j M Y') }}</span>
                         <form method="POST" action="{{ route('account.saves.destroy', $save->id) }}">
                             @csrf
                             @method('DELETE')
-                            <button class="underline" type="submit">Remove</button>
+                            <button class="underline" type="submit"
+                                aria-label="Remove the save of “{{ $save->artwork->title }}”">Remove</button>
                         </form>
-                    </span>
+                    </div>
                 </div>
             @empty
                 <p class="f-body opacity-60">No saves outside trails.</p>
@@ -136,14 +137,15 @@
                     @foreach ($events as $event)
                         <li class="border-dark-soft flex items-baseline justify-between gap-16 border-t py-12">
                             <span class="f-body">{{ $event->description() }}</span>
-                            <span class="f-ui-01 flex shrink-0 items-center gap-16 opacity-60">
-                                {{ $event->occurred_at->format('j M Y, H:i') }}
+                            <div class="f-ui-01 flex shrink-0 items-baseline gap-16 opacity-60">
+                                <span>{{ $event->occurred_at->format('j M Y, H:i') }}</span>
                                 <form method="POST" action="{{ route('account.memory.events.destroy', $event->id) }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="underline" type="submit">Delete</button>
+                                    <button class="underline" type="submit"
+                                        aria-label="Delete the ledger entry from {{ $event->occurred_at->format('j M Y, H:i') }}">Delete</button>
                                 </form>
-                            </span>
+                            </div>
                         </li>
                     @endforeach
                 </ul>

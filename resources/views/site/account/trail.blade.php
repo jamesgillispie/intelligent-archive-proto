@@ -68,12 +68,14 @@
                                     action="{{ route('account.trails.items.destroy', [$trail->id, $item->id]) }}">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="underline" type="submit">Remove</button>
+                                    <button class="underline" type="submit"
+                                        aria-label="Remove “{{ $item->artwork->title }}” from this trail">Remove</button>
                                 </form>
                                 @if ($trail->items->count() >= 2)
                                     <label class="flex cursor-pointer items-center gap-6">
                                         <input name="works[]" form="compare-form" type="checkbox"
-                                            value="{{ $item->artwork->id }}" />
+                                            value="{{ $item->artwork->id }}"
+                                            aria-label="Compare “{{ $item->artwork->title }}”" />
                                         Compare
                                     </label>
                                 @endif
@@ -151,7 +153,8 @@
                         <form method="POST" action="{{ route('account.notes.destroy', $note->id) }}">
                             @csrf
                             @method('DELETE')
-                            <button class="underline" type="submit">Delete</button>
+                            <button class="underline" type="submit"
+                                aria-label="Delete the note from {{ $note->created_at->format('j M Y') }}">Delete</button>
                         </form>
                     </div>
                 </div>
