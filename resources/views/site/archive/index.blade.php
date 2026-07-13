@@ -22,8 +22,22 @@
             </nav>
         </header>
 
+        @foreach ($curatedSets as $set)
+            <section class="border-dark-soft border-t py-32">
+                <h2 class="f-heading-03">{{ $set->title }}</h2>
+                @if ($set->description)
+                    <p class="f-body mt-12 max-w-[640px]">{{ $set->description }}</p>
+                @endif
+                <div class="mt-24 grid grid-cols-2 gap-x-16 gap-y-32 md:grid-cols-4">
+                    @foreach ($set->artworks as $artwork)
+                        <x-archive.artwork-card :artwork="$artwork" />
+                    @endforeach
+                </div>
+            </section>
+        @endforeach
+
         @if ($recent->isNotEmpty())
-            <section class="pb-48">
+            <section class="border-dark-soft border-t py-32 pb-48">
                 <h2 class="f-ui-01 mb-16 uppercase tracking-wide opacity-60">Recently added</h2>
                 <div class="grid grid-cols-2 gap-x-16 gap-y-32 md:grid-cols-4">
                     @foreach ($recent as $artwork)
