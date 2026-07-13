@@ -15,6 +15,6 @@
     </ul>
     <p class="f-ui-01 mt-16 opacity-60">
         Memory agreement {{ config('memory.consent_version') }} ·
-        <a class="underline" href="{{ url('/methodology') }}">How memory works</a>
+        <a class="underline" href="{{ route('methodology') }}">How memory works</a>
     </p>
 </aside>

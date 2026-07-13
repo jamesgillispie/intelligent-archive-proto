@@ -14,6 +14,7 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ArticlesController;
 use App\Http\Controllers\ArtworksController;
 use App\Http\Controllers\HomepageController;
+use App\Http\Controllers\MethodologyController;
 use App\Http\Controllers\Account\SaveController;
 use App\Http\Controllers\Account\NotesController;
 use App\Http\Controllers\Account\SavesController;
@@ -116,6 +117,11 @@ App::booted(function () {
         Route::get('/', HomepageController::class)->name('home');
         Route::get('/about', AboutController::class)->name('about.index');
         Route::get('/contact', ContactController::class)->name('contact.index');
+
+        // How memory works — static, code-versioned, linked from the consent
+        // banner and the memory dashboard. Registered before the pages
+        // catch-all so the guarantee page can never silently 404.
+        Route::get('/methodology', MethodologyController::class)->name('methodology');
 
         Route::get('/articles', [ArticlesController::class, 'index'])->name('articles.index');
         Route::get('/articles/{slug}', [ArticlesController::class, 'show'])->name('articles.show');

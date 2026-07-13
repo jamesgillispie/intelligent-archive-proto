@@ -28,7 +28,7 @@
                 </p>
             @endif
             <p class="f-ui-01 mt-8">
-                <a class="underline opacity-60" href="/methodology">How memory works</a>
+                <a class="underline opacity-60" href="{{ route('methodology') }}">How memory works</a>
             </p>
         </section>
 
