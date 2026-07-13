@@ -12,6 +12,9 @@ use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ArticlesController;
 use App\Http\Controllers\ArtworksController;
 use App\Http\Controllers\HomepageController;
+use App\Http\Controllers\Account\TrailsController;
+use App\Http\Controllers\Account\ConsentController;
+use App\Http\Controllers\Account\MemoryActivatedController;
 
 App::booted(function () {
     // Sitemap
@@ -21,6 +24,22 @@ App::booted(function () {
     }
 
     Route::get('/site.webmanifest', [Manifest::class, 'show'])->name('front.site-manifest');
+
+    // Account — auth'd and consent-gated; the 'private' group carries the
+    // session/CSRF stack, and staying outside the cache middleware group is
+    // what keeps memory pages out of the response cache. Routes registered
+    // in App::booted() get no middleware group implicitly.
+    Route::middleware(['private', 'auth'])
+        ->prefix('account')
+        ->name('account.')
+        ->group(function () {
+            Route::get('/memory-activated', MemoryActivatedController::class)->name('memory-activated');
+            Route::get('/consent', ConsentController::class)->name('consent');
+
+            Route::middleware('consented')->group(function () {
+                Route::get('/trails', TrailsController::class)->name('trails');
+            });
+        });
 
     Route::middleware(['cache:public;max_age=60;s_maxage=3600'])->group(function () {
         Route::get('/', HomepageController::class)->name('home');

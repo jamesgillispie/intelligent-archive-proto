@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use App\Http\Middleware\ForceFrontRoutes;
 use App\Http\Middleware\SimpleCacheHeader;
+use App\Http\Middleware\EnsureMemoryConsented;
 use Illuminate\Session\Middleware\StartSession;
 use App\Http\Middleware\CleanCacheableResponses;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -62,7 +63,10 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'cache' => SimpleCacheHeader::class,
+            'consented' => EnsureMemoryConsented::class,
         ]);
+
+        $middleware->redirectUsersTo('/account/trails');
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

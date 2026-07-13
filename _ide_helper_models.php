@@ -10,6 +10,64 @@
  * @author Barry vd. Heuvel <barryvdh@gmail.com>
  */
 
+namespace App\Models\Memory {
+    /**
+     * The consent record login creates. Authoritative gate every memory write
+     * checks; export includes it; revocation triggers the deletion flow.
+     *
+     * @property int $id
+     * @property int $user_id
+     * @property string $consent_version
+     * @property \Illuminate\Support\Carbon $granted_at
+     * @property \Illuminate\Support\Carbon|null $revoked_at
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property-read \App\Models\User $user
+     * @method static \Database\Factories\Memory\MemoryConsentFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent whereConsentVersion($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent whereGrantedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent whereRevokedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|MemoryConsent whereUserId($value)
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperMemoryConsent {}
+}
+
+namespace App\Models\Memory {
+    /**
+     * The user's memory switches. Pause != delete: pausing stops writes while
+     * the durable SQL record stays intact and readable.
+     *
+     * @property int $id
+     * @property int $user_id
+     * @property bool $memory_paused
+     * @property bool $semantic_suggestions_enabled
+     * @property \Illuminate\Support\Carbon|null $created_at
+     * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property-read \App\Models\User $user
+     * @method static \Database\Factories\Memory\PersonalizationSettingFactory factory($count = null, $state = [])
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting newModelQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting newQuery()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting query()
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting whereCreatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting whereId($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting whereMemoryPaused($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting whereSemanticSuggestionsEnabled($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting whereUpdatedAt($value)
+     * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalizationSetting whereUserId($value)
+     * @mixin \Eloquent
+     */
+    #[\AllowDynamicProperties]
+    class IdeHelperPersonalizationSetting {}
+}
+
 namespace App\Models\Source {
     /**
      * Typed view over source_records rows from published_images.csv.
@@ -153,8 +211,12 @@ namespace App\Models {
      * @property string|null $remember_token
      * @property \Illuminate\Support\Carbon|null $created_at
      * @property \Illuminate\Support\Carbon|null $updated_at
+     * @property-read \App\Models\Memory\MemoryConsent|null $memoryConsent
+     * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Memory\MemoryConsent> $memoryConsents
+     * @property-read int|null $memory_consents_count
      * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
      * @property-read int|null $notifications_count
+     * @property-read \App\Models\Memory\PersonalizationSetting|null $personalizationSetting
      * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
      * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
      * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
