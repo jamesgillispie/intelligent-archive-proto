@@ -56,10 +56,12 @@
         <section class="border-dark-soft mb-32 border p-20">
             <h2 class="f-ui-01 uppercase tracking-wide opacity-60">Held context</h2>
             <p class="f-body mt-8 max-w-[640px] opacity-80">
-                Short-lived working memory derived from your actions —
-                currently just the pointer behind “continue where you left
-                off”. It rebuilds from the record below, expires on its own,
-                and deleting your memory purges it instantly.
+                Short-lived working memory derived from your actions — the
+                pointer behind “continue where you left off”, the trail
+                summaries behind “expand this trail”, and the dismissed
+                suggestions the system must never repeat. It rebuilds from
+                the record below, expires on its own, and deleting your
+                memory purges it instantly.
             </p>
             @forelse ($heldContext as $namespace => $context)
                 <div class="border-dark-soft mt-16 border-t pt-12">
@@ -104,6 +106,21 @@
                 {{ $noteCount }} {{ $noteCount === 1 ? 'note lives' : 'notes live' }} inside them.
             </p>
         </section>
+
+        @if ($suggestionCount > 0)
+            <section class="mb-32">
+                <h2 class="f-ui-01 mb-16 uppercase tracking-wide opacity-60">Suggestions</h2>
+                <p class="f-body max-w-[640px]">
+                    {{ $suggestionCount }} {{ $suggestionCount === 1 ? 'suggestion has' : 'suggestions have' }}
+                    been shown to you — each is kept with its reasons and
+                    evidence, explained on its trail page, and included in your
+                    export.
+                    @if ($dismissedCount > 0)
+                        The {{ $dismissedCount }} you dismissed will never be suggested again.
+                    @endif
+                </p>
+            </section>
+        @endif
 
         <section>
             <h2 class="f-ui-01 mb-8 uppercase tracking-wide opacity-60">The ledger</h2>

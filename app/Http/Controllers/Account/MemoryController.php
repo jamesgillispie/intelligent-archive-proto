@@ -31,10 +31,21 @@ class MemoryController extends Controller
             'consent' => $user->memoryConsent,
             'consentCurrent' => $this->consent->hasCurrentConsent($user),
             'paused' => $this->consent->isPaused($user),
-            'heldContext' => $this->iris->inspect($this->visitors->userPrefix($user)),
+            // Trail summaries are keyed by trail (STRATEGY §7), so the
+            // dashboard inspects each trail's prefix alongside the user's.
+            'heldContext' => array_merge(
+                $this->iris->inspect($this->visitors->userPrefix($user)),
+                ...$user
+                    ->trails()
+                    ->pluck('id')
+                    ->map(fn($id) => $this->iris->inspect($this->visitors->trailPrefix((int) $id)))
+                    ->all(),
+            ),
             'saves' => $user->artworkSaves()->with('artwork')->latest()->get(),
             'trailCount' => $user->trails()->count(),
             'noteCount' => $user->notes()->count(),
+            'suggestionCount' => $user->recommendations()->count(),
+            'dismissedCount' => $user->recommendations()->dismissed()->count(),
             'events' => $user->memoryEvents()->orderByDesc('occurred_at')->orderByDesc('id')->paginate(25),
         ]);
     }

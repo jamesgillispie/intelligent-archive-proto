@@ -128,6 +128,7 @@ class MemoryEvent extends Model
                 $number('trails', 'trail', 'trails'),
                 $number('saves', 'save', 'saves'),
                 $number('notes', 'note', 'notes'),
+                $number('suggestions', 'suggestion', 'suggestions'),
                 $number('entries', 'earlier ledger entry', 'earlier ledger entries'),
             ])->join(', ', ' and ');
     }

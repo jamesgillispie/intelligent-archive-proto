@@ -15,6 +15,8 @@
                 holding {{ $counts['works'] }} saved {{ $counts['works'] === 1 ? 'work' : 'works' }}</li>
             <li>{{ $counts['saves'] }} {{ $counts['saves'] === 1 ? 'save' : 'saves' }} outside trails</li>
             <li>{{ $counts['notes'] }} {{ $counts['notes'] === 1 ? 'note' : 'notes' }}</li>
+            <li>{{ $counts['suggestions'] }} {{ $counts['suggestions'] === 1 ? 'suggestion' : 'suggestions' }}
+                shown to you, with their reasons</li>
             <li>all {{ $counts['entries'] }} ledger {{ $counts['entries'] === 1 ? 'entry' : 'entries' }}</li>
             <li>any short-lived held context, purged and verified gone</li>
         </ul>

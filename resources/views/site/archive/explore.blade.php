@@ -30,6 +30,17 @@
                     @endforeach
                 </p>
             @endif
+
+            @if ($trailSeeds !== [])
+                <p class="f-ui-01 mt-16 opacity-60">
+                    From your trails:
+                    @foreach ($trailSeeds as $seed)
+                        <a class="underline"
+                            href="{{ route('archive.explore', ['q' => $seed]) }}">{{ $seed }}</a>{{ $loop->last ? '' : ', ' }}
+                    @endforeach
+                    — starting points drawn from works you saved; results stay the same for everyone.
+                </p>
+            @endif
         </header>
 
         @if ($result !== null)
