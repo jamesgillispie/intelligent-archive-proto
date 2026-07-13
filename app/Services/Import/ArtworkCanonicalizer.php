@@ -2,6 +2,7 @@
 
 namespace App\Services\Import;
 
+use App\Events\ArtworkPromoted;
 use App\Models\Source\SourceRecord;
 use App\Jobs\Import\DownloadArtworkImage;
 use App\Twill\Capsules\Artists\Models\Artist;
@@ -70,6 +71,10 @@ class ArtworkCanonicalizer
 
         // Displayable requires at least one primary image (rights signal).
         $artwork->forceFill(['is_displayable' => $imageCount > 0])->save();
+
+        // Promotion is complete; downstream layers (Nexus indexing) react
+        // to the event — ingestion itself never calls them (STRATEGY §3.8).
+        ArtworkPromoted::dispatch($artwork->id);
 
         return $artwork;
     }
