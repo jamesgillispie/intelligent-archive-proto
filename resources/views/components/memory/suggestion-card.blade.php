@@ -18,10 +18,8 @@
             @endphp
             <p>
                 Drawn from “{{ $context['trail_title'] ?? '' }}” as it stood —
-                {{ $context['item_count'] ?? '?' }} works you chose
-                @if ($anchors !== [])
-                    , anchored on {{ implode(', ', $anchors) }}
-                @endif.
+                {{ $context['item_count'] ?? '?' }} works you
+                chose{{ $anchors !== [] ? ', anchored on ' . implode(', ', $anchors) : '' }}.
                 @if ($respected > 0)
                     {{ $respected }} {{ $respected === 1 ? 'work you dismissed was' : 'works you dismissed were' }}
                     left out.
@@ -41,11 +39,17 @@
     <div class="f-ui-01 mt-8 flex items-center gap-16">
         <form method="POST" action="{{ route('account.suggestions.accept', $recommendation->id) }}">
             @csrf
-            <button class="underline" type="submit">Add to this trail</button>
+            <button class="underline" type="submit"
+                aria-label="Save “{{ $recommendation->artwork->title }}” to this trail">
+                Save to this trail
+            </button>
         </form>
         <form method="POST" action="{{ route('account.suggestions.dismiss', $recommendation->id) }}">
             @csrf
-            <button class="underline opacity-60" type="submit">Dismiss</button>
+            <button class="underline opacity-60" type="submit"
+                aria-label="Dismiss the suggestion of “{{ $recommendation->artwork->title }}”">
+                Dismiss
+            </button>
         </form>
     </div>
 </div>

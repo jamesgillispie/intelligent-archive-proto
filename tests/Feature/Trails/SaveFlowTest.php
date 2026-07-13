@@ -58,7 +58,7 @@ class SaveFlowTest extends TestCase
             ->get(route('account.save', $artwork->slug))
             ->assertOk()
             ->assertSee('Save for later')
-            ->assertSee('Add to a trail')
+            ->assertSee('Save to a trail')
             ->assertSee('Start a new trail with this work')
             ->assertSee('Hudson River Light')
             ->assertSee('already in this trail');

@@ -45,7 +45,7 @@
             </section>
 
             <section class="border-dark-soft border-t pb-32 pt-24">
-                <h2 class="f-ui-01 mb-8 uppercase tracking-wide opacity-60">Add to a trail</h2>
+                <h2 class="f-ui-01 mb-8 uppercase tracking-wide opacity-60">Save to a trail</h2>
                 @if ($trails->isEmpty())
                     <p class="f-body opacity-80">You have no active trails yet — start one below.</p>
                 @else
@@ -78,7 +78,7 @@
                         </label>
 
                         <button class="f-ui-01 self-start border border-black px-24 py-10" type="submit">
-                            Add to trail
+                            Save to trail
                         </button>
                     </form>
                 @endif

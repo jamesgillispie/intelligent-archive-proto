@@ -5,8 +5,8 @@
         <header class="pb-24">
             <h1 class="f-heading-01">Sign in</h1>
             <p class="f-body mt-16 opacity-80">
-                Signing in turns your memory back on — your trails, saves and
-                notes pick up where you left them.
+                Sign in to return to your trails, saves and notes — they are
+                where you left them.
             </p>
         </header>
 
