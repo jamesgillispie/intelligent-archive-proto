@@ -53,6 +53,10 @@ class MemoryEvent extends Model
 
     public const MEMORY_DELETED = 'memory_deleted';
 
+    public const SUGGESTION_DISMISSED = 'suggestion_dismissed';
+
+    public const COMPARISON_REQUESTED = 'comparison_requested';
+
     public $timestamps = false;
 
     protected $fillable = ['user_id', 'event_type', 'payload', 'occurred_at'];
@@ -94,8 +98,17 @@ class MemoryEvent extends Model
             self::CONSENT_RENEWED => 'Renewed the memory agreement',
             self::CONSENT_REVOKED => 'Revoked the memory agreement',
             self::MEMORY_DELETED => $this->memoryDeletedDescription(),
+            self::SUGGESTION_DISMISSED => "Dismissed the suggestion of “{$artwork}” for the trail “{$trail}”",
+            self::COMPARISON_REQUESTED => $this->comparisonRequestedDescription(),
             default => ucfirst(str_replace('_', ' ', $this->event_type)),
         };
+    }
+
+    private function comparisonRequestedDescription(): string
+    {
+        $titles = collect((array) ($this->payload['artwork_titles'] ?? []))->map(fn($title) => "“{$title}”");
+
+        return $titles->isEmpty() ? 'Asked for a comparison' : 'Asked how ' . $titles->join(', ', ' and ') . ' compare';
     }
 
     /**

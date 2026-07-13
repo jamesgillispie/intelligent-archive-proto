@@ -25,6 +25,21 @@ class VisitorContextService
     }
 
     /**
+     * Trail-scoped derived context — the semantic summary behind "expand
+     * this trail". Keyed by trail rather than user (STRATEGY §7), so it is
+     * purged when the trail stops existing and with the owner's memory.
+     */
+    public function trailPrefix(int $trailId): string
+    {
+        return "trail:{$trailId}:";
+    }
+
+    public function trailNamespace(int $trailId, string $name): string
+    {
+        return $this->trailPrefix($trailId) . $name;
+    }
+
+    /**
      * Anonymous context is keyed by session only, TTL-capped, and must
      * never accumulate into a profile. No consumer until the Phase 6
      * explore surface; the prefix contract exists so isolation from user

@@ -8,6 +8,7 @@ use App\Models\Memory\MemoryEvent;
 use Database\Factories\UserFactory;
 use App\Models\Memory\MemoryConsent;
 use App\Models\Memory\ResearchTrail;
+use App\Models\Memory\Recommendation;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Memory\PersonalizationSetting;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -75,5 +76,10 @@ class User extends Authenticatable
     public function memoryEvents(): HasMany
     {
         return $this->hasMany(MemoryEvent::class);
+    }
+
+    public function recommendations(): HasMany
+    {
+        return $this->hasMany(Recommendation::class);
     }
 }

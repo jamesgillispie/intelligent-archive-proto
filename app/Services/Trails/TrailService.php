@@ -131,8 +131,9 @@ class TrailService
             ]);
         });
 
-        // An archived trail is no longer a place to continue.
+        // An archived trail is no longer a place to continue or expand.
         $this->trailMemory->forgetActiveTrail($trail->user, $trail->id);
+        $this->trailMemory->forgetTrailContext($trail->id);
     }
 
     public function reactivate(ResearchTrail $trail): void
@@ -162,10 +163,11 @@ class TrailService
             ]);
 
             $trail->notes()->delete();
-            $trail->delete(); // items cascade at the database level
+            $trail->delete(); // items and recommendations cascade at the database level
         });
 
         $this->trailMemory->forgetActiveTrail($user, $trailId);
+        $this->trailMemory->forgetTrailContext($trailId);
     }
 
     /**
