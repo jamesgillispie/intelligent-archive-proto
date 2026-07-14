@@ -103,17 +103,19 @@ class FakeNexus implements NexusIndexer, NexusRetriever
             ->with(['artists', 'classification', 'department', 'medium'])
             ->where(function ($outer) use ($terms) {
                 foreach ($terms as $term) {
-                    $like = '%' . $term . '%';
-                    $outer
-                        ->orWhere('title', 'ilike', $like)
-                        ->orWhere('attribution', 'ilike', $like)
-                        ->orWhere('medium_text', 'ilike', $like)
-                        ->orWhere('description', 'ilike', $like)
-                        ->orWhere('source_inscription', 'ilike', $like)
-                        ->orWhereHas('artists', fn($q) => $q->where('name', 'ilike', $like))
-                        ->orWhereHas('classification', fn($q) => $q->where('name', 'ilike', $like))
-                        ->orWhereHas('department', fn($q) => $q->where('name', 'ilike', $like))
-                        ->orWhereHas('medium', fn($q) => $q->where('name', 'ilike', $like));
+                    foreach ($this->variants($term) as $variant) {
+                        $like = '%' . $variant . '%';
+                        $outer
+                            ->orWhere('title', 'ilike', $like)
+                            ->orWhere('attribution', 'ilike', $like)
+                            ->orWhere('medium_text', 'ilike', $like)
+                            ->orWhere('description', 'ilike', $like)
+                            ->orWhere('source_inscription', 'ilike', $like)
+                            ->orWhereHas('artists', fn($q) => $q->where('name', 'ilike', $like))
+                            ->orWhereHas('classification', fn($q) => $q->where('name', 'ilike', $like))
+                            ->orWhereHas('department', fn($q) => $q->where('name', 'ilike', $like))
+                            ->orWhereHas('medium', fn($q) => $q->where('name', 'ilike', $like));
+                    }
                 }
             })
             ->orderBy('id')
@@ -708,12 +710,14 @@ class FakeNexus implements NexusIndexer, NexusRetriever
 
         foreach ($terms as $term) {
             foreach ($haystacks as $field => [$weight, $haystack, $describe]) {
-                if ($haystack === '' || mb_stripos($haystack, $term) === false) {
+                $matched = $haystack === '' ? null : $this->firstMatchingVariant($haystack, $term);
+
+                if ($matched === null) {
                     continue;
                 }
 
                 $score += $weight;
-                $reasons[] = $describe($term);
+                $reasons[] = $describe($matched);
                 $citations[] = new Citation($candidate->id, $field, $haystack);
             }
         }
@@ -743,6 +747,42 @@ class FakeNexus implements NexusIndexer, NexusRetriever
         $terms = array_values(array_unique(array_filter($words, fn(string $word) => mb_strlen($word) >= 3)));
 
         return array_slice($terms, 0, 6);
+    }
+
+    /**
+     * Naive singular/plural folding so "storms" still finds "Storm at
+     * Sea". Substring matching already covers singular query → plural
+     * text; these fallback stems cover the other direction, and a crude
+     * stem is fine here because it is matched as a substring ("cit[y]"
+     * from "cities", "box" from "boxes"). A live semantic client makes
+     * this whole concern moot.
+     *
+     * @return non-empty-list<string> the term itself first, then any fallback stem
+     */
+    protected function variants(string $term): array
+    {
+        $variants = [$term];
+
+        if (mb_strlen($term) >= 5 && str_ends_with($term, 'ies')) {
+            $variants[] = mb_substr($term, 0, -3) . 'y';
+        } elseif (mb_strlen($term) >= 5 && str_ends_with($term, 'es')) {
+            $variants[] = mb_substr($term, 0, -2);
+        } elseif (mb_strlen($term) >= 4 && str_ends_with($term, 's') && !str_ends_with($term, 'ss')) {
+            $variants[] = mb_substr($term, 0, -1);
+        }
+
+        return $variants;
+    }
+
+    protected function firstMatchingVariant(string $haystack, string $term): ?string
+    {
+        foreach ($this->variants($term) as $variant) {
+            if (mb_stripos($haystack, $variant) !== false) {
+                return $variant;
+            }
+        }
+
+        return null;
     }
 
     /**

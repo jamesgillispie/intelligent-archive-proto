@@ -67,6 +67,36 @@ class ExploreTest extends TestCase
         );
     }
 
+    public function testPluralQueriesStillFindSingularRecords(): void
+    {
+        $this->seedCollection();
+
+        $this->get(route('archive.explore', ['q' => 'storms']))
+            ->assertOk()
+            ->assertSee('Storm at Sea')
+            ->assertDontSee('Quiet Interior');
+    }
+
+    public function testAFruitlessQueryOffersStartingPointsFromTheCollection(): void
+    {
+        $this->seedCollection();
+
+        $classification = \App\Twill\Capsules\Classifications\Models\Classification::create([
+            'published' => true,
+            'name' => 'Painting',
+            'source_name' => 'Painting',
+        ]);
+        Artwork::displayable()
+            ->first()
+            ->update(['classification_id' => $classification->id]);
+
+        $this->get(route('archive.explore', ['q' => 'zzzunfindable']))
+            ->assertOk()
+            ->assertSee('Nothing surfaced')
+            ->assertSee('start from the collection itself')
+            ->assertSee('Painting');
+    }
+
     public function testAnEmptyQueryShowsThePromptWithoutResults(): void
     {
         $this->get(route('archive.explore'))

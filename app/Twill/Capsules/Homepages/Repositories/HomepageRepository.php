@@ -4,7 +4,6 @@ namespace App\Twill\Capsules\Homepages\Repositories;
 
 use A17\Twill\Image\TwillImage;
 use A17\Twill\Repositories\ModuleRepository;
-use App\Twill\Capsules\Articles\Models\Article;
 use A17\Twill\Repositories\Behaviors\HandleFiles;
 use App\Twill\Capsules\Homepages\Models\Homepage;
 use A17\Twill\Repositories\Behaviors\HandleBlocks;
@@ -36,8 +35,6 @@ class HomepageRepository extends ModuleRepository
 
     public function getShowData(Homepage $landing): array
     {
-        $latestArticles = Article::query()->publishedInListings()->orderBy('publication_date', 'desc')->take(3)->get();
-
         return [
             'hero' => [
                 'tagline' => $landing->tagline,

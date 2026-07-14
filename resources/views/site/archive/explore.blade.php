@@ -60,6 +60,15 @@
                         a classification, or an artist’s name — the record is literal
                         about what it knows.
                     </p>
+                    @if ($startingPoints !== [])
+                        <p class="f-ui-01 mt-16 opacity-60">
+                            Or start from the collection itself:
+                            @foreach ($startingPoints as $point)
+                                <a class="underline"
+                                    href="{{ route('archive.explore', ['q' => $point]) }}">{{ $point }}</a>{{ $loop->last ? '' : ', ' }}
+                            @endforeach
+                        </p>
+                    @endif
                 @endif
             </section>
         @endif

@@ -98,6 +98,13 @@ App::booted(function () {
             });
         });
 
+    // The home page is the search doorway, and what it suggests depends
+    // on who is looking — the session's earlier queries for guests, trail
+    // seeds for consented users — so it must never sit in the public
+    // response cache, where one visitor's context would be served to the
+    // next. Rendering it only reads; nothing is written anywhere.
+    Route::middleware('private')->get('/', HomepageController::class)->name('home');
+
     // Explore is sessioned — rate limiting is per session, and anonymous
     // visitors get a session-scoped "earlier this session" line — so it
     // stays out of the response-cache group. Anonymous access is the
@@ -114,7 +121,6 @@ App::booted(function () {
         ->name('archive.compare');
 
     Route::middleware(['cache:public;max_age=60;s_maxage=3600'])->group(function () {
-        Route::get('/', HomepageController::class)->name('home');
         Route::get('/about', AboutController::class)->name('about.index');
         Route::get('/contact', ContactController::class)->name('contact.index');
 
