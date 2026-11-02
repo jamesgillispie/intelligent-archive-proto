@@ -30,7 +30,7 @@ services:
       - mailpit:/data
 
   pgsql:
-    image: bitnamilegacy/postgresql:17
+    image: soldevelo/postgresql:17
     environment:
       - POSTGRESQL_DATABASE=db
       - POSTGRESQL_USERNAME=user
